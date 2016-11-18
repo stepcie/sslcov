@@ -1,61 +1,73 @@
-#' Computes a smoothed projection
+#' Computes a smoothed projection using C++ 
 #'
-#' Smoothing predictor using Gaussian kernel
+#' Smoothing predictor using Gaussian kernel using a C++ implementation
 #'
 #' Smoothing over the CDF transformed data preven_learns some tail estimation issues
 #' when the new data are subsequen_learnly large.
 #'
 #' @param ri label data correlation
-#' @param fi the odl data
-#' @param fnew the new data to be
-#' @param wgt facultative weights (used for perturbations)
-#' @param bw bandwith
+#' 
+#' @param fi the labeled data
+#' 
+#' @param fnew the new data to be predicted
+#' 
+#' @param wgt optionnal weights (used for perturbations). Default is \code{NULL} in which case 
+#' no weighting is performed.
+#' 
+#' @param bw kernel bandwith. Default is \code{NULL} in which case the sd of the new data divided 
+#' by the total number of observation to the power 0.3 is used.
+#' 
 #' @param cdf_trans a logical flag indicating wether the smoothing should be
 #' performed on the data transformed with their cdf. Default is \code{TRUE}.
-#' See Details.
+#' 
+#' @param rsup the supervised estimate of rhat
 #'
-#'@return a
+#' @return a vector of length 3 containing:\itemize{
+#'  \item rhat.ssl the semi-supervised estimation of rhat
+#'  \item rhat.ssl.bc the semi-supervised estimation of rhat accounting for smoothing bias 
+#'  \item bw the value of the bandwith actually used
+#' }
 #'
-#'@importFrom landpred VTM
+#' @keywords internal
 #'
-#'@export
-smooth_sslCPP <- function(ri, fi, fnew, rsup, wgt=NULL, bw=NULL, cdf_trans=TRUE, condi=FALSE){
+#' @export
+#' 
+smooth_sslCPP <- function(ri, fi, fnew, wgt = NULL, bw = NULL, cdf_trans=TRUE, rsup){
 
   n_learn <- length(ri)
   n_new <- length(fnew)
   nn <- length(fi)
 
   if(is.null(wgt)){
-    wgt_i <- rep(1,n_learn)
+    wgti <- rep(1,n_learn)
     #wgt_j <- rep(1,n_new)
   }else{
-    wgt_i <- wgt[(1:n_learn)]
+    wgti <- wgt[(1:n_learn)]
     #wgt_j <- wgt[-(1:n_learn)]
   }
 
   if(cdf_trans){
-    pi <- ecdf_cpp(c(fi, fnew), c(fi, fnew))
-    #pi <- sum.I(c(fi, fnew),"<=" ,c(fi, fnew),Vi=wgt)
-    pnew <-  pi[-(1:n_learn)]
-    pi <-  pi[1:n_learn]
+    pall <- ecdf_cpp(c(fi, fnew), c(fi, fnew))
+    #pi <- sum.I(c(fi, fnew), "<=", c(fi, fnew), Vi=wgt)
+    pnew <-  pall[-(1:n_learn)]
+    pi <-  pall[1:n_learn]
   }else{
     pi <-  fi
-    pnew <- fnew
+    pall <- c(fi,fnew)
   }
 
   if(is.null(bw)){
-    bw <-  sd(c(pi,pnew))/nn^0.3
+    bw <-  sd(pall)/nn^0.3
   }
 
-  kij <- dnormC_multi(pi, c(pi,pnew), bw, Log = FALSE)
-  #ki <- dnormC_multi(pi, pnew, bw, Log = FALSE)
-  #smthed <- c(t(wgt_i*ri)%*%ki)/c(t(wgt_i)%*%ki)
-  rhat.num = c(t(wgt_i*ri)%*%kij); rhat.den = c(t(wgt_i)%*%kij)
-  rhat.ssl = mean(rhat.num/rhat.den)
-  #rhat.ssl.bc = rhat.ssl - (mean(rhat.num[1:n_learn]/rhat.den[1:n_learn])-rsup)
-  rhat.ssl.bc = rhat.ssl - (mean(rhat.num[1:n_learn]/rhat.den[1:n_learn]*wgt_i)/mean(wgt_i)-rsup)
+  
+  kij <- dnormC_multi(pi, pall, bw, Log = FALSE)
+  rhat.num <- c(t(wgti*ri)%*%kij)
+  rhat.den <- c(t(wgti)%*%kij)
+  
+  rhat.ssl <- mean(rhat.num/rhat.den)
+  
+  rhat.ssl.bc <- rhat.ssl - (mean(rhat.num[1:n_learn]/rhat.den[1:n_learn]*wgti)/mean(wgti)-rsup)
 
-  #return(c("rhat"=mean(smthed*wgt_j,na.rm=T)/mean(wgt_j), bw))
-  #return(c("rhat"=mean(smthed, na.rm=T), bw))
-  return(c(rhat.ssl,rhat.ssl.bc,bw))
+  return(c(rhat.ssl, rhat.ssl.bc, bw))
 }
