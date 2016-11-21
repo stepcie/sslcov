@@ -1,0 +1,15 @@
+language: R
+r: devel
+cache: packages
+r_packages:
+- CompQuadForm
+- GSA
+- KernSmooth
+bioc_packages:
+- limma
+- DESeq2
+- edgeR
+r_github_packages:
+- hadley/ggplot2
+r_build_args: "--html"
+r_check_args: "--as-cran --timings"
