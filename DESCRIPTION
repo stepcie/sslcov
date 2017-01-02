@@ -9,7 +9,6 @@ Description: More about what it does
 LinkingTo: Rcpp, RcppArmadillo
 Imports:
     Rcpp (>= 0.12.1),
-    RcppArmadillo (>= 0.6.100.0.0),
     landpred,
     MASS
 License: MIT + file LICENSE

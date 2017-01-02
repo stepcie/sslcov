@@ -9,7 +9,10 @@ using namespace Rcpp;
 //'@useDynLib sslcov
 //'@examples
 //'library(microbenchmark)
-//'microbenchmark(sum.I(c(fi, fnew), FUN=">=", fnew)/n_new,
+//'fi <- rnorm(n=1000)
+//'n_new <- 100
+//'fnew <- rnorm(n=n_new) 
+//'microbenchmark(#sum.I(c(fi, fnew), FUN=">=", fnew)/n_new,
 //'    ecdf(fnew)(c(fi, fnew)),
 //'    ecdf_cpp(c(fi, fnew), sort(fnew))/n_new
 //')
