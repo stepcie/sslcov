@@ -116,12 +116,14 @@ rhat_cond <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
   fi_hat <- c(cbind(1, data_sup[, -outcome_colnum])%*%bethat)*cond_G_res[1:nn]
   fj_hat <- (cbind(1, W_unlabel)%*%bethat)*cond_G_res[-c(1:nn)]
   ##rhat_ssl = mean(npreg(bws=bw,txdat=fi_hat,tydat=ri_hat, exdat = fj_hat)$mean,na.rm=T)
-  rhat_ssl <- smooth_sslCPP(ri = ri_hat, fi = fi_hat, fnew = fj_hat,
+  rhat_ssl <- smooth_sslCPP(ri = ri_hat, fi = fi_hat, fnew = fj_hat, rsup = rhat_sup,
                             wgt = weights, bw = bw, cdf_trans = cdf_trans)
 
-  bw <- rhat_ssl[2]
+  bw <- rhat_ssl[3]
+  rhat_ssl_bc <- rhat_ssl[2]
   rhat_ssl <- rhat_ssl[1]
-  return(list("rhat" = c("Supervised"=rhat_sup, "SemiSupervised"=rhat_ssl),
+  return(list("rhat" = c("Supervised"=rhat_sup,"NoSmooth"=mean(c(fi_hat,fj_hat)), "SemiSupervised"=rhat_ssl,
+                         "SemiSupervisedBC"=rhat_ssl_bc),
               "bw" = bw,
               "data_sup" = data_sup,
               "W_unlabel" = W_unlabel,

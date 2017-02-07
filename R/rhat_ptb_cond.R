@@ -128,8 +128,8 @@ rhat_ptb_cond <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
   }
   fi_ptb <- c(cbind(1, data_sup_ptb[, -outcome_colnum])[, 1:ncoef]%*%betptb)*cond_G_res[1:nn]
   fj_ptb <- c(cbind(1, W_unlabel_ptb)%*%betptb)*cond_G_res[-c(1:nn)]
-  ptb_ssl <- smooth_sslCPP(ri=ri_ptb, fi=fi_ptb, fnew=fj_ptb, wgt=Vij_w, bw=bw, cdf_trans=cdf_trans)
+  ptb_ssl <- smooth_sslCPP(ri=ri_ptb, fi=fi_ptb, fnew=fj_ptb, rsup=rhat_ptb_sup, wgt=Vij_w, bw=bw, cdf_trans=cdf_trans)
   #rptb.ssl = mean(Vj*npreg(bws=bw,txdat=fi_ptb,tydat=ri_ptb*Vi,exdat=fj_ptb)$mean/
   #                  npreg(bws=bw,txdat=fi_ptb,tydat=Vi,exdat=fj_ptb)$mean,na.rm=T)/mean(Vj)
-  c("rhat_sup"=rhat_ptb_sup, "rhat_ssl"=ptb_ssl["rhat"], "beta_lm_ptb"=betptb)
+  c("rhat_sup"=rhat_ptb_sup,"rhat_ns"=mean(c(fi_ptb,fj_ptb)), "rhat_ssl"=ptb_ssl[1], "rhat_ssl_bc"=ptb_ssl[2], "beta_lm_ptb"=betptb)
 }
