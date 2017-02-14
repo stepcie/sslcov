@@ -6,8 +6,7 @@
 \usage{
 simu_Boris_1runFn(NN = 2e+05, nn_divide = 1000, nperturb = 500,
   mySigma = matrix(rep(0.3, 16), 4, 4) + 0.7 * diag(4), underTheNull = TRUE,
-  verbose = FALSE, i = NULL, extreme = TRUE, beta_2bePtb = TRUE,
-  cond = FALSE)
+  verbose = FALSE, i = NULL, extreme = TRUE, beta_2bePtb = TRUE)
 }
 \description{
 Simulation function computing 1 run implemented by Boris

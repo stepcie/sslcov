@@ -7,12 +7,13 @@
 dnormC_multi(x, m, sd, Log = FALSE)
 }
 \arguments{
-\item{x}{data matrix of dimension p x n, p being the dimension of the
-data and n the number of data points}
+\item{x}{vector of inputs}
+
+\item{m}{vector of means}
 
 \item{sd}{the standard deviation}
 
-\item{logical}{flag for returning the log of the probability density
+\item{Log}{logical flag for returning the log of the probability density
 function. Defaults is \code{TRUE}}
 }
 \value{

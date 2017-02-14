@@ -3,10 +3,10 @@
 
 #' C++ implementation of univariate Normal of mean zero pdf for multiple inputs
 #'
-#'@param x data matrix of dimension p x n, p being the dimension of the
-#'data and n the number of data points
+#'@param x vector of inputs
+#'@param m vector of means
 #'@param sd the standard deviation
-#'@param logical flag for returning the log of the probability density
+#'@param Log logical flag for returning the log of the probability density
 #'function. Defaults is \code{TRUE}
 #'@return matrix of densities of dimension \code{p x n}.
 #'@export

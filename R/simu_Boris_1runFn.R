@@ -9,7 +9,7 @@ simu_Boris_1runFn <- function(NN = 200000, nn_divide = 1000, nperturb = 500,
                               mySigma = matrix(rep(0.3,16),4,4) + 0.7*diag(4),
                               underTheNull = TRUE,
                               verbose = FALSE, i = NULL, extreme = TRUE,
-                              beta_2bePtb=TRUE, cond=FALSE){
+                              beta_2bePtb=TRUE){
 
   if(verbose){cat(i, "/100...", sep="")}
 
@@ -43,7 +43,7 @@ simu_Boris_1runFn <- function(NN = 200000, nn_divide = 1000, nperturb = 500,
   }
 
   rhat_sup_w <-  rhat_out$rhat["Supervised"]
-  rhat_ssl_w <-  rhat_out$rhat["SemiSupervised.rhat"]
+  rhat_ssl_w <-  rhat_out$rhat["SemiSupervised"]
   bw <- rhat_out$bw
 
   if(extreme){
@@ -52,19 +52,19 @@ simu_Boris_1runFn <- function(NN = 200000, nn_divide = 1000, nperturb = 500,
                                  covariate_name="G",
                                  surrogate_name=c("S1", "S2", "S3"),
                                  weights = es$weights,
-                                 beta_2bePtb=beta_2bePtb)))
+                                 ptb_beta=beta_2bePtb)))
   }else{
     res_ptb <-  na.omit(t(sapply(1:nperturb, rhat_ptb, data=data_sampled, nn=nn, bw=bw,
                                  ptb_nolab=FALSE, outcome_name="Y",
                                  covariate_name="G",
                                  surrogate_name=c("S1", "S2", "S3"),
-                                 beta_2bePtb=beta_2bePtb)))
+                                 ptb_beta=beta_2bePtb)))
   }
   res_ptb_finite <- res_ptb[apply(abs(res_ptb),1,max) < Inf,]
 
 
   rhat_sup_w_ptb <- res_ptb_finite[,"rhat_sup"]
-  rhat_ssl_w_ptb <- res_ptb_finite[,"rhat_ssl.rhat"]
+  rhat_ssl_w_ptb <- res_ptb_finite[,"rhat_ssl"]
 
   sigma_sup_w <- sd(rhat_sup_w_ptb)
   pval_sup_w <- 2*(1-pnorm(abs(rhat_sup_w/sigma_sup_w)))

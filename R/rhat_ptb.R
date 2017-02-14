@@ -51,7 +51,7 @@
 #'    }
 #'
 #'
-#'@seealso \code{\link{smooth_ssl}} \code{\link{r_hat}}
+#'@seealso \code{\link{smooth_ssl}} \code{\link{rhat}}
 #'
 #'@export
 rhat_ptb <- function(data, nn, outcome_name = NULL, covariate_name=NULL,

@@ -64,6 +64,6 @@ available for all the data.
 Smoothing over the CDF transformed data prevents some tail estimation issues when the new data are subsequently large.
 }
 \seealso{
-\code{\link{smooth_ssl}} \code{\link{r_hat}}
+\code{\link{smooth_ssl}} \code{\link{rhat}}
 }
 
