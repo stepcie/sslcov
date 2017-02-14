@@ -17,6 +17,8 @@
 #'@param condi logical flag indicating whether the covariance estimated should be condition on the
 #'covariates indicated in . Default is \code{TRUE}.
 #'
+#'@importFrom stats na.omit sd quantile
+#'
 #'@examples
 #'\dontrun{
 #'#rm(list=ls())

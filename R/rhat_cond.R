@@ -37,6 +37,8 @@
 #'@param do_interact logical flag indicating whether interactins between \code{x} and
 #'covariates should be taken into account when imputing \code{y}. Default is \code{TRUE}.
 #'
+#'@importFrom stats lm
+#'
 #'
 #'@return a list with the following elements:\itemize{
 #'    \item rhat

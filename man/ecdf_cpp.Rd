@@ -15,13 +15,14 @@ ecdf_cpp(sobs, sref)
 C++ implementation of empirical cdf
 }
 \examples{
+\dontrun{
 library(microbenchmark)
 fi <- rnorm(n=1000)
 n_new <- 100
-fnew <- rnorm(n=n_new) 
+fnew <- rnorm(n=n_new)
 microbenchmark(#sum.I(c(fi, fnew), FUN=">=", fnew)/n_new,
    ecdf(fnew)(c(fi, fnew)),
    ecdf_cpp(c(fi, fnew), sort(fnew))/n_new
-)
+)}
 }
 

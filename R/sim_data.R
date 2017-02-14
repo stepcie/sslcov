@@ -11,6 +11,7 @@
 #' @return simulated data matrix of size \code{ntot x 4}
 #'
 #' @importFrom MASS mvrnorm
+#' @importFrom stats rnbinom rbinom pnorm
 #'
 #' @keywords internal
 #' @export

@@ -43,6 +43,8 @@
 #'@param do_interact logical flag indicating whether interactins between \code{x} and
 #'covariates should be taken into account when imputing \code{y}. Default is \code{FALSE}.
 #'
+#'@importFrom stats lm rbeta
+#'
 #'@return a list with the following elements:\itemize{
 #'    \item rhat
 #'    \item bw the bandwith used

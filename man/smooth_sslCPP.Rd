@@ -13,10 +13,10 @@ smooth_sslCPP(ri, fi, fnew, wgt = NULL, bw = NULL, cdf_trans = TRUE, rsup)
 
 \item{fnew}{the new data to be predicted}
 
-\item{wgt}{optionnal weights (used for perturbations). Default is \code{NULL} in which case 
+\item{wgt}{optionnal weights (used for perturbations). Default is \code{NULL} in which case
 no weighting is performed.}
 
-\item{bw}{kernel bandwith. Default is \code{NULL} in which case the sd of the new data divided 
+\item{bw}{kernel bandwith. Default is \code{NULL} in which case the sd of the new data divided
 by the total number of observation to the power 0.3 is used.}
 
 \item{cdf_trans}{a logical flag indicating wether the smoothing should be
@@ -27,7 +27,7 @@ performed on the data transformed with their cdf. Default is \code{TRUE}.}
 \value{
 a vector of length 3 containing:\itemize{
  \item rhat.ssl the semi-supervised estimation of rhat
- \item rhat.ssl.bc the semi-supervised estimation of rhat accounting for smoothing bias 
+ \item rhat.ssl.bc the semi-supervised estimation of rhat accounting for smoothing bias
  \item bw the value of the bandwith actually used
 }
 }

@@ -1,4 +1,4 @@
-#' Computes a smoothed projection using C++ 
+#' Computes a smoothed projection using C++
 #'
 #' Smoothing predictor using Gaussian kernel using a C++ implementation
 #'
@@ -6,32 +6,34 @@
 #' when the new data are subsequen_learnly large.
 #'
 #' @param ri label data correlation
-#' 
+#'
 #' @param fi the labeled data
-#' 
+#'
 #' @param fnew the new data to be predicted
-#' 
-#' @param wgt optionnal weights (used for perturbations). Default is \code{NULL} in which case 
+#'
+#' @param wgt optionnal weights (used for perturbations). Default is \code{NULL} in which case
 #' no weighting is performed.
-#' 
-#' @param bw kernel bandwith. Default is \code{NULL} in which case the sd of the new data divided 
+#'
+#' @param bw kernel bandwith. Default is \code{NULL} in which case the sd of the new data divided
 #' by the total number of observation to the power 0.3 is used.
-#' 
+#'
 #' @param cdf_trans a logical flag indicating wether the smoothing should be
 #' performed on the data transformed with their cdf. Default is \code{TRUE}.
-#' 
+#'
 #' @param rsup the supervised estimate of rhat
+#'
+#' @importFrom stats sd
 #'
 #' @return a vector of length 3 containing:\itemize{
 #'  \item rhat.ssl the semi-supervised estimation of rhat
-#'  \item rhat.ssl.bc the semi-supervised estimation of rhat accounting for smoothing bias 
+#'  \item rhat.ssl.bc the semi-supervised estimation of rhat accounting for smoothing bias
 #'  \item bw the value of the bandwith actually used
 #' }
 #'
 #' @keywords internal
 #'
 #' @export
-#' 
+#'
 smooth_sslCPP <- function(ri, fi, fnew, wgt = NULL, bw = NULL, cdf_trans=TRUE, rsup){
 
   n_learn <- length(ri)
@@ -60,13 +62,13 @@ smooth_sslCPP <- function(ri, fi, fnew, wgt = NULL, bw = NULL, cdf_trans=TRUE, r
     bw <-  sd(pall)/nn^0.3
   }
 
-  
+
   kij <- dnormC_multi(pi, pall, bw, Log = FALSE)
   rhat.num <- c(t(wgti*ri)%*%kij)
   rhat.den <- c(t(wgti)%*%kij)
-  
+
   rhat.ssl <- mean(rhat.num/rhat.den)
-  
+
   rhat.ssl.bc <- rhat.ssl - (mean(rhat.num[1:n_learn]/rhat.den[1:n_learn]*wgti)/mean(wgti)-rsup)
 
   return(c(rhat.ssl, rhat.ssl.bc, bw))

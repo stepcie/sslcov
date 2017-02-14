@@ -5,7 +5,7 @@ Version: 0.1.0
 Date: 2016-08-25
 Author: Boris P. Hejblum, Stephanie Chan, Tianxi Cai
 Maintainer: Stephanie Chan <stephaniechan@fas.harvard.edu>
-Description: More about what it does
+Description: More about what it does.
 LinkingTo: Rcpp, RcppArmadillo
 Imports:
     Rcpp (>= 0.12.1),

@@ -22,14 +22,15 @@ dnormC_multi <- function(x, m, sd, Log = FALSE) {
 #'
 #'@useDynLib sslcov
 #'@examples
+#'\dontrun{
 #'library(microbenchmark)
 #'fi <- rnorm(n=1000)
 #'n_new <- 100
-#'fnew <- rnorm(n=n_new) 
+#'fnew <- rnorm(n=n_new)
 #'microbenchmark(#sum.I(c(fi, fnew), FUN=">=", fnew)/n_new,
 #'    ecdf(fnew)(c(fi, fnew)),
 #'    ecdf_cpp(c(fi, fnew), sort(fnew))/n_new
-#')
+#')}
 #'@export
 ecdf_cpp <- function(sobs, sref) {
     .Call('sslcov_ecdf_cpp', PACKAGE = 'sslcov', sobs, sref)
