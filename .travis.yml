@@ -1,5 +1,7 @@
 language: R
-r: devel
+r:
+- oldrel
+- release
 cache: packages
 r_packages:
 - Rcpp
