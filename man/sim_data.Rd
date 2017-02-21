@@ -23,4 +23,3 @@ simulated data matrix of size \code{ntot x 4}
 Simulating data
 }
 \keyword{internal}
-

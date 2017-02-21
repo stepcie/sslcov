@@ -22,4 +22,3 @@ matrix of densities of dimension \code{p x n}.
 \description{
 C++ implementation of univariate Normal of mean zero pdf for multiple inputs
 }
-

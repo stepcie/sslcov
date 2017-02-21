@@ -59,4 +59,3 @@ Smoothing over the CDF transformed data prevents some tail estimation issues whe
 \seealso{
 \code{\link{smooth_ssl}}
 }
-

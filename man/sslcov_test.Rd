@@ -71,4 +71,3 @@ res_ssl_now_condi <- ssl_test(y = data_sim[,"Y"], x = data_sim[,"G"], index_sup 
 }
 
 }
-

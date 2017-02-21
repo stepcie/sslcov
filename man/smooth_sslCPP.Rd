@@ -39,4 +39,3 @@ Smoothing over the CDF transformed data preven_learns some tail estimation issue
 when the new data are subsequen_learnly large.
 }
 \keyword{internal}
-

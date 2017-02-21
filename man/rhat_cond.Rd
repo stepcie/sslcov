@@ -18,7 +18,7 @@ remaining rows should be the unlabeled data.}
 column from data containing the partly missing outcome of interest}
 
 \item{covariate_name}{a character string containing the name of the
-column from data containing the covariate to be related to the outcome of
+column from data containing the covariate of interest to be related to the outcome of
 interest}
 
 \item{surrogate_name}{a character string vector containing the name of the
@@ -59,4 +59,3 @@ Smoothing over the CDF transformed data prevents some tail estimation issues whe
 \seealso{
 \code{\link{smooth_ssl}}
 }
-

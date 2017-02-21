@@ -17,4 +17,3 @@ columns from data containing the surrogate variables (at least 2)}
 \description{
 Extreme sampling function
 }
-

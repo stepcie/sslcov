@@ -39,4 +39,3 @@ Smoothing over the CDF transformed data prevents some tail estimation issues
 when the new data are subsequently large.
 }
 \keyword{internal}
-

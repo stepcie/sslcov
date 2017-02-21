@@ -25,4 +25,3 @@ microbenchmark(#sum.I(c(fi, fnew), FUN=">=", fnew)/n_new,
    ecdf_cpp(c(fi, fnew), sort(fnew))/n_new
 )}
 }
-

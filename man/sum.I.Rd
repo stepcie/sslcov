@@ -13,4 +13,3 @@ a vector of length(yy)
 Cumulative indicator computation ?
 }
 \keyword{internal}
-

@@ -16,7 +16,7 @@
 #'column from data containing the partly missing outcome of interest
 #'
 #'@param covariate_name a character string containing the name of the
-#'column from data containing the covariate to be related to the outcome of
+#'column from data containing the covariate of interest to be related to the outcome of
 #'interest
 #'
 #'@param surrogate_name a character string vector containing the name of the
@@ -79,8 +79,9 @@ rhat_cond <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
   outcome_colnum <- 1
 
   ncoef <- ncol(data_all)
+  
+  W_label <- data_all[(1:nn), -outcome_colnum]
   W_unlabel <- data_all[-(1:nn), -outcome_colnum]
-
   data_sup <- data_all[1:nn,]
 
 
@@ -98,25 +99,35 @@ rhat_cond <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
   }else{
     covariate_counts <- data_all[, covariate_name]
   }
-  browser()
-  alpha_0 <- MASS::glm.nb(covariate_counts~data_all[, -c(outcome_colnum, covariate_colnum, surrogate_colnums), drop=FALSE])$coef
-  pred_G <- exp(cbind(1, data_all[, -c(outcome_colnum,covariate_colnum, surrogate_colnums)])%*%matrix(alpha_0, ncol=1))
-  cond_G_res <- (covariate_counts - pred_G)
+  
+  #SUP
+  gamma_tilde <- MASS::glm.nb(covariate_counts[1:nn]~data_all[1:nn, -c(outcome_colnum, covariate_colnum, surrogate_colnums), drop=FALSE])$coef
+  pred_G_sup <- exp(cbind(1, data_all[1:nn, -c(outcome_colnum,covariate_colnum, surrogate_colnums)])%*%matrix(gamma_tilde, ncol=1))
+  cond_G_res_sup <- (covariate_counts[1:nn] - pred_G_sup)
 
   #yi_cen <- data_sup[, 1] - mean(data_sup[, 1]*Vi)/mean(Vi)
-  yi_cen <- lm(data_sup[, 1]~data_sup[, adjust_covariates_colnums], weights=Vi)$residuals
-  ri_hat <- yi_cen*cond_G_res[1:nn]
+  linearmodel_y_sup <- lm(data_sup[, outcome_colnum]~data_sup[, adjust_covariates_colnums], weights=Vi)$residuals
+  yi_cen <- linearmodel_y_sup$residuals
+  mu_y_tilde_i <- cbind(1, data_sup[, adjust_covariates_colnums]) %*% linearmodel_y_sup$coef
+  
+  ri_hat <- yi_cen*cond_G_res_sup[1:nn]
   rhat_sup <- mean(ri_hat*Vi)/mean(Vi)
 
-  bethat <- lm(yi_cen~data_sup[, -outcome_colnum], weights = Vi)$coef
-  if(length(which(is.na(bethat)))>0){
-    bethat[which(is.na(bethat))] <- 0 #TODO
+  
+  #SSL
+  beta_hat <- lm(data_sup[, outcome_colnum]~data_sup[, -outcome_colnum], weights = Vi)$coef
+  if(length(which(is.na(beta_hat)))>0){
+    warning("some betahat are NA...")
+    beta_hat[which(is.na(beta_hat))] <- 0 #TODO
   }
-  #print(bethat)
-  #betax <- cbind(1, data_sup[, -outcome_colnum])[, 1:ncoef]%*%bethat
+  gamma_hat <- MASS::glm.nb(covariate_counts~data_all[, -c(outcome_colnum, covariate_colnum, surrogate_colnums), drop=FALSE])$coef
+  pred_G <- exp(cbind(1, data_all[, -c(outcome_colnum,covariate_colnum, surrogate_colnums)])%*%matrix(gamma_hat, ncol=1))
+  cond_G_res <- (covariate_counts - pred_G)
+  #print(beta_hat)
+  #betax <- cbind(1, data_sup[, -outcome_colnum])[, 1:ncoef]%*%beta_hat
   #plot(density(betax))
-  fi_hat <- c(cbind(1, data_sup[, -outcome_colnum])%*%bethat)*cond_G_res[1:nn]
-  fj_hat <- (cbind(1, W_unlabel)%*%bethat)*cond_G_res[-c(1:nn)]
+  fi_hat <- (c(cbind(1, W_label)%*%beta_hat) - mu_y_tilde_i)*cond_G_res[1:nn]
+  fj_hat <- (c(cbind(1, W_unlabel)%*%beta_hat) - mu_y_tilde_i)*cond_G_res[-c(1:nn)]
   ##rhat_ssl = mean(npreg(bws=bw,txdat=fi_hat,tydat=ri_hat, exdat = fj_hat)$mean,na.rm=T)
   rhat_ssl <- smooth_sslCPP(ri = ri_hat, fi = fi_hat, fnew = fj_hat, rsup = rhat_sup,
                             wgt = weights, bw = bw, cdf_trans = cdf_trans)
@@ -129,7 +140,7 @@ rhat_cond <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
               "bw" = bw,
               "data_sup" = data_sup,
               "W_unlabel" = W_unlabel,
-              "beta_lm" = bethat)
+              "beta_lm" = beta_hat)
   )
 }
 

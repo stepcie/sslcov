@@ -2,8 +2,8 @@
 % Please edit documentation in R/sslcov-package.R
 \docType{package}
 \name{sslcov-package}
-\alias{sslcov}
 \alias{sslcov-package}
+\alias{sslcov}
 \title{ssl}
 \description{
 This package implelments
@@ -22,4 +22,3 @@ The main function
 Boris P. Hejblum, Stephanie Chan, Tianxi Cai
 --- Maintainer: Stephanie Chan
 }
-

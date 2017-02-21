@@ -14,4 +14,3 @@
 \description{
 Print methods for ssl_test results
 }
-
