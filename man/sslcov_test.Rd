@@ -47,22 +47,26 @@ data_sim <- sim_data(ntot = NN, Sigma = mySigma, b_G = beta)
 es <- extremeSampling(data_sim, nn=nn, surrogate_name=c("S1", "S2", "S3"))
 data_sampled <- rbind(data_sim[es$extreme_index,], data_sim[-es$extreme_index,])
 res_ssl <- ssl_test(y = data_sim[,"Y"], x = log(data_sim[,"G"] + 1), index_sup = 1:nn,
-                   surrogate = data_sim[,c("S1", "S2", "S3")],  adjust_covariates = data_sim[,"X", drop=FALSE],
+                   surrogate = data_sim[,c("S1", "S2", "S3")],
+                   adjust_covariates = data_sim[,"X", drop=FALSE],
                    sampling_weights = es$weights,
                    do_interact=FALSE, condi = FALSE)
 res_ssl_now <- ssl_test(y = data_sim[,"Y"], x = log(data_sim[,"G"] + 1), index_sup = 1:nn,
-                       surrogate = data_sim[,c("S1", "S2", "S3")],  adjust_covariates = data_sim[,"X", drop=FALSE],
+                       surrogate = data_sim[,c("S1", "S2", "S3")],
+                       adjust_covariates = data_sim[,"X", drop=FALSE],
                        do_interact=FALSE, condi = FALSE)
 
 #library(profvis)
 #profvis(
 res_ssl_condi <- ssl_test(y = data_sim[,"Y"], x = data_sim[,"G"], index_sup = 1:nn,
-                         surrogate = data_sim[,c("S1", "S2", "S3")],  adjust_covariates = data_sim[,"X", drop=FALSE],
+                         surrogate = data_sim[,c("S1", "S2", "S3")],
+                         adjust_covariates = data_sim[,"X", drop=FALSE],
                          sampling_weights = es$weights,
                          do_interact=FALSE, condi = TRUE)
 #)
 res_ssl_now_condi <- ssl_test(y = data_sim[,"Y"], x = data_sim[,"G"], index_sup = 1:nn,
-                             surrogate = data_sim[,c("S1", "S2", "S3")],  adjust_covariates = data_sim[,"X", drop=FALSE],
+                             surrogate = data_sim[,c("S1", "S2", "S3")],
+                             adjust_covariates = data_sim[,"X", drop=FALSE],
                              do_interact=FALSE, condi = TRUE)
 }
 
