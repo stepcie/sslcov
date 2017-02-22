@@ -86,9 +86,6 @@ rhat_cond <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
 
 
   #new for cond
-  covariate_colnum <- which(colnames(data)==covariate_name)
-  surrogate_colnums <- which(colnames(data) %in% surrogate_name)
-
   covariate_colnum <- which(colnames(data_all)==covariate_name)
   adjust_covariates_colnums <- which(colnames(data_all) %in% adjust_covariates_name)
   surrogate_colnums <- which(colnames(data_all) %in% surrogate_name)
@@ -102,11 +99,12 @@ rhat_cond <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
   
   #SUP
   gamma_tilde <- MASS::glm.nb(covariate_counts[1:nn]~data_all[1:nn, -c(outcome_colnum, covariate_colnum, surrogate_colnums), drop=FALSE])$coef
-  pred_G_sup <- exp(cbind(1, data_all[1:nn, -c(outcome_colnum,covariate_colnum, surrogate_colnums)])%*%matrix(gamma_tilde, ncol=1))
+  #TODO weights=Vi ?
+  pred_G_sup <- exp(cbind(1, data_all[1:nn, -c(outcome_colnum, covariate_colnum, surrogate_colnums)])%*%matrix(gamma_tilde, ncol=1))
   cond_G_res_sup <- (covariate_counts[1:nn] - pred_G_sup)
 
   #yi_cen <- data_sup[, 1] - mean(data_sup[, 1]*Vi)/mean(Vi)
-  linearmodel_y_sup <- lm(data_sup[, outcome_colnum]~data_sup[, adjust_covariates_colnums], weights=Vi)$residuals
+  linearmodel_y_sup <- lm(data_sup[, outcome_colnum]~data_sup[, adjust_covariates_colnums], weights=Vi)
   yi_cen <- linearmodel_y_sup$residuals
   mu_y_tilde_i <- cbind(1, data_sup[, adjust_covariates_colnums]) %*% linearmodel_y_sup$coef
   
@@ -129,12 +127,12 @@ rhat_cond <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
   fi_hat <- (c(cbind(1, W_label)%*%beta_hat) - mu_y_tilde_i)*cond_G_res[1:nn]
   fj_hat <- (c(cbind(1, W_unlabel)%*%beta_hat) - mu_y_tilde_i)*cond_G_res[-c(1:nn)]
   ##rhat_ssl = mean(npreg(bws=bw,txdat=fi_hat,tydat=ri_hat, exdat = fj_hat)$mean,na.rm=T)
-  rhat_ssl <- smooth_sslCPP(ri = ri_hat, fi = fi_hat, fnew = fj_hat, rsup = rhat_sup,
+  rhat_ssl_smres <- smooth_sslCPP(ri = ri_hat, fi = fi_hat, fnew = fj_hat, rsup = rhat_sup,
                             wgt = weights, bw = bw, cdf_trans = cdf_trans)
 
-  bw <- rhat_ssl[3]
-  rhat_ssl_bc <- rhat_ssl[2]
-  rhat_ssl <- rhat_ssl[1]
+  bw <- rhat_ssl_smres[3]
+  rhat_ssl_bc <- rhat_ssl_smres[2]
+  rhat_ssl <- rhat_ssl_smres[1]
   return(list("rhat" = c("Supervised"=rhat_sup,"NoSmooth"=mean(c(fi_hat,fj_hat)), "SemiSupervised"=rhat_ssl,
                          "SemiSupervisedBC"=rhat_ssl_bc),
               "bw" = bw,
