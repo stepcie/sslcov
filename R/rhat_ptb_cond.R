@@ -93,13 +93,15 @@ rhat_ptb_cond <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
     data_all_ptb <- cbind(data_all_ptb, data_interact_ptb)
   }
   outcome_colnum <- 1
-  covariate_colnum <- 2
 
   ncoef <- ncol(data_all_ptb)
+  
+  W_label_ptb <- data_all_ptb[(1:nn), -outcome_colnum]
   W_unlabel_ptb <- data_all_ptb[-(1:nn), -outcome_colnum]
-
   data_sup_ptb <- data_all_ptb[1:nn, ]
-
+  
+  
+  #new for cond
   covariate_colnum <- which(colnames(data_all_ptb)==covariate_name)
   adjust_covariates_colnums <- which(colnames(data_all_ptb) %in% adjust_covariates_name)
   surrogate_colnums <- which(colnames(data_all_ptb) %in% surrogate_name)
@@ -110,28 +112,47 @@ rhat_ptb_cond <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
   }else{
     covariate_counts <- data_all_ptb[, covariate_name]
   }
-  alpha_0 <- MASS::glm.nb(covariate_counts~data_all_ptb[, -c(outcome_colnum, covariate_colnum, surrogate_colnums)], weights=Vij)$coef
-  pred_G <- exp(cbind(1, data_all_ptb[, -c(outcome_colnum, covariate_colnum, surrogate_colnums)])%*%matrix(alpha_0, ncol=1))
-  cond_G_res <- (data_all_ptb[, covariate_name] - pred_G)
+  
+  #SUP
+  gamma_tilde_ptb <- MASS::glm.nb(covariate_counts[1:nn]~data_all_ptb[1:nn, -c(outcome_colnum, covariate_colnum, surrogate_colnums), drop=FALSE], weights=Vi)$coef
+  pred_G_sup <- exp(cbind(1, data_all_ptb[1:nn, -c(outcome_colnum, covariate_colnum, surrogate_colnums)])%*%matrix(gamma_tilde_ptb, ncol=1))
+  cond_G_res_sup <- (covariate_counts[1:nn] - pred_G_sup)
 
-  #yi_cen_ptb <- data_sup_ptb[,1] - mean(data_sup_ptb[,1])
-  ri_ptb <- lm(data_sup_ptb[, outcome_colnum]~data_sup_ptb[, adjust_covariates_colnums], weights=Vi)$residuals*cond_G_res[1:nn]
-  rhat_ptb_sup <- mean(ri_ptb*Vi)/mean(Vi)
+  linearmodel_y_sup_ptb <- lm(data_sup_ptb[, outcome_colnum]~data_sup_ptb[, adjust_covariates_colnums], weights=Vi)
+  yi_cen_ptb <- linearmodel_y_sup_ptb$residuals
+  mu_y_tilde_i_ptb <- cbind(1, data_sup_ptb[, adjust_covariates_colnums]) %*% linearmodel_y_sup_ptb$coef
+  
+  ri_hat_ptb <- yi_cen_ptb*cond_G_res_sup[1:nn]
+  rhat_sup_ptb <- mean(ri_hat_ptb*Vi)/mean(Vi)
 
-  yi_cen_ptb <- lm(data_sup_ptb[, outcome_colnum]~data_sup_ptb[, adjust_covariates_colnums], weights=Vi)$residuals
+  #SSL
   if(ptb_beta){
-    betptb <- lm(yi_cen_ptb ~ data_sup_ptb[, -outcome_colnum], weights=Vi)$coef[1:ncoef]
+    beta_hat_ptb <- lm(data_sup_ptb[, outcome_colnum] ~ data_sup_ptb[, -outcome_colnum], weights = Vi)$coef[1:ncoef]
   }
   else{
-    betptb <- lm(yi_cen_ptb ~ data_sup_ptb[,-outcome_colnum])$coef[1:ncoef]
+    beta_hat_ptb <- lm(data_sup_ptb[, outcome_colnum] ~ data_sup_ptb[, -outcome_colnum], weights = weights[1:nn])$coef[1:ncoef]
   }
-  if(length(which(is.na(betptb)))>0){
-    betptb[which(is.na(betptb))] <- 0 #TODO
+  if(length(which(is.na(beta_hat_ptb)))>0){
+    beta_hat_ptb[which(is.na(beta_hat_ptb))] <- 0 #TODO
   }
-  fi_ptb <- c(cbind(1, data_sup_ptb[, -outcome_colnum])[, 1:ncoef]%*%betptb)*cond_G_res[1:nn]
-  fj_ptb <- c(cbind(1, W_unlabel_ptb)%*%betptb)*cond_G_res[-c(1:nn)]
-  ptb_ssl <- smooth_sslCPP(ri=ri_ptb, fi=fi_ptb, fnew=fj_ptb, rsup=rhat_ptb_sup, wgt=Vij_w, bw=bw, cdf_trans=cdf_trans)
+  gamma_hat_ptb <- MASS::glm.nb(covariate_counts~data_all_ptb[, -c(outcome_colnum, covariate_colnum, surrogate_colnums), drop=FALSE], weights = Vij_w)$coef
+  pred_G_ptb <- exp(cbind(1, data_all_ptb[, -c(outcome_colnum,covariate_colnum, surrogate_colnums)])%*%matrix(gamma_hat_ptb, ncol=1))
+  cond_G_res_ptb <- (covariate_counts - pred_G_ptb)
+  
+  fi_hat_ptb <- (c(cbind(1, W_label_ptb)%*%beta_hat_ptb) - mu_y_tilde_i_ptb)*cond_G_res_ptb[1:nn]
+  fj_hat_ptb <- (c(cbind(1, W_unlabel_ptb)%*%beta_hat_ptb) - mu_y_tilde_i_ptb)*cond_G_res_ptb[-c(1:nn)]
   #rptb.ssl = mean(Vj*npreg(bws=bw,txdat=fi_ptb,tydat=ri_ptb*Vi,exdat=fj_ptb)$mean/
   #                  npreg(bws=bw,txdat=fi_ptb,tydat=Vi,exdat=fj_ptb)$mean,na.rm=T)/mean(Vj)
-  c("rhat_sup"=rhat_ptb_sup,"rhat_ns"=mean(c(fi_ptb,fj_ptb)), "rhat_ssl"=ptb_ssl[1], "rhat_ssl_bc"=ptb_ssl[2], "beta_lm_ptb"=betptb)
-}
+  rhat_ssl_smres_ptb <- smooth_sslCPP(ri = ri_hat_ptb, fi = fi_hat_ptb, fnew = fj_hat_ptb, rsup = rhat_sup_ptb,
+                                      wgt = Vij_w, bw = bw, cdf_trans = cdf_trans)
+  
+  bw_ptb <- rhat_ssl_smres_ptb[3]
+  rhat_ssl_bc_ptb <- rhat_ssl_smres_ptb[2]
+  rhat_ssl_ptb <- rhat_ssl_smres_ptb[1]
+  return(list("rhat" = c("Supervised"=rhat_sup_ptb,"NoSmooth"=mean(c(fi_hat_ptb,fj_hat_ptb)), "SemiSupervised"=rhat_ssl_ptb,
+                         "SemiSupervisedBC"=rhat_ssl_bc_ptb),
+              "bw" = bw_ptb,
+              "data_sup" = data_sup,
+              "W_unlabel" = W_unlabel,
+              "beta_lm" = beta_hat_ptb)
+  )}

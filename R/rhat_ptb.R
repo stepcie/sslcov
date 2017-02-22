@@ -104,7 +104,7 @@ rhat_ptb <- function(data, nn, outcome_name = NULL, covariate_name=NULL,
     betptb <- lm(yi_cen~data_sup_ptb[, -outcome_colnum], weights=Vi)$coef[1:ncoef]
   }
   else{
-    betptb <- lm(yi_cen~data_sup_ptb[, -outcome_colnum])$coef[1:ncoef]
+    betptb <- lm(yi_cen ~ data_sup_ptb[, -outcome_colnum])$coef[1:ncoef] #TODO ?weights = weights[1:nn]
   }
   if(length(which(is.na(betptb)))>0){
     betptb[which(is.na(betptb))] <- 0 #TODO
