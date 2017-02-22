@@ -35,7 +35,10 @@ extremeSampling <- function(data, nn, surrogate_name=NULL){
   vri <-  1*(ind_samp %in% ind_random)
   pi <-  (nsamp/4)/ntot
   wi  <-  delta + (1-delta)*vri/pi
-  wgt <- c(wi, rep(1, ntot-nsamp))
+  wgt <- c(wi, rep(1/pi, ntot-nsamp))
+
+  wi <- wi/max(wi)
+  wgt <- wgt/max(wgt)
 
   return(list("extreme_index"=ind_samp, "weights" = wi))
 }

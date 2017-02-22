@@ -4,7 +4,7 @@
 \alias{sslcov_test}
 \title{Wrapper function for testing TODO}
 \usage{
-sslcov_test(y, x, index_sup, surrogate, adjust_covariates,
+sslcov_test(y, x, index_sup, surrogate, adjust_covariates = NULL,
   sampling_weights = rep(1/length(y), length(index_sup)), nperturb = 500,
   do_interact = TRUE, condi = FALSE)
 }
@@ -18,7 +18,7 @@ sslcov_test(y, x, index_sup, surrogate, adjust_covariates,
 \item{surrogate}{matrix with \code{N} rows containing the surrogate information}
 
 \item{adjust_covariates}{optional matrix with \code{N} rows containing covariates to adjust on in
-the semi-supervised estimation}
+the semi-supervised estimation. Default is \code{NULL}}
 
 \item{sampling_weights}{optional vector of length \code{n} containing the weights with which the
 \code{n} supervised observation were sampled from the population. Default is random sampling.}
@@ -37,34 +37,44 @@ Wrapper function for testing TODO
 \examples{
 \dontrun{
 #rm(list=ls())
+
+#Simulate data
 nn_divide <- 50
 NN <- 2000
 nn <- NN/nn_divide
 mySigma <- matrix(rep(0.3,16),4,4) + 0.7*diag(4)
-beta <- 5 #0.6
+beta <- 0#5 #0.6
 set.seed(1234)
 data_sim <- sim_data(ntot = NN, Sigma = mySigma, b_G = beta)
+
+#True Covariance:
+cov(data_sampled[,"Y"], log(data_sampled[,"G"] + 1))
+
 es <- extremeSampling(data_sim, nn=nn, surrogate_name=c("S1", "S2", "S3"))
 data_sampled <- rbind(data_sim[es$extreme_index,], data_sim[-es$extreme_index,])
-res_ssl <- ssl_test(y = data_sim[,"Y"], x = log(data_sim[,"G"] + 1), index_sup = 1:nn,
-                   surrogate = data_sim[,c("S1", "S2", "S3")],
-                   adjust_covariates = data_sim[,"X", drop=FALSE],
-                   sampling_weights = es$weights,
-                   do_interact=FALSE, condi = FALSE)
-res_ssl_now <- ssl_test(y = data_sim[,"Y"], x = log(data_sim[,"G"] + 1), index_sup = 1:nn,
-                       surrogate = data_sim[,c("S1", "S2", "S3")],
-                       adjust_covariates = data_sim[,"X", drop=FALSE],
-                       do_interact=FALSE, condi = FALSE)
+res_ssl <- sslcov_test(y = data_sampled[,"Y"], x = log(data_sampled[,"G"] + 1), index_sup = 1:nn,
+                      surrogate = data_sampled[,c("S1", "S2", "S3")],
+                      #adjust_covariates = data_sampled[,"X", drop=FALSE],
+                      sampling_weights = es$weights,
+                      do_interact=FALSE, condi = FALSE)
+res_ssl_noWeights <- sslcov_test(y = data_sampled[,"Y"], x = log(data_sampled[,"G"] + 1), index_sup = 1:nn,
+                                surrogate = data_sampled[,c("S1", "S2", "S3")],
+                                #adjust_covariates = data_sampled[,"X", drop=FALSE],
+                                do_interact=FALSE, condi = FALSE)
+res_ssl_randomsampling <- sslcov_test(y = data_sim[,"Y"], x = log(data_sim[,"G"] + 1), index_sup = 1:nn,
+                                     surrogate = data_sim[,c("S1", "S2", "S3")],
+                                     #adjust_covariates = data_sampled[,"X", drop=FALSE],
+                                     do_interact=FALSE, condi = FALSE)
 
 #library(profvis)
 #profvis(
-res_ssl_condi <- ssl_test(y = data_sim[,"Y"], x = data_sim[,"G"], index_sup = 1:nn,
+res_ssl_condi <- sslcov_test(y = data_sim[,"Y"], x = data_sim[,"G"], index_sup = 1:nn,
                          surrogate = data_sim[,c("S1", "S2", "S3")],
                          adjust_covariates = data_sim[,"X", drop=FALSE],
                          sampling_weights = es$weights,
                          do_interact=FALSE, condi = TRUE)
 #)
-res_ssl_now_condi <- ssl_test(y = data_sim[,"Y"], x = data_sim[,"G"], index_sup = 1:nn,
+res_ssl_now_condi <- sslcov_test(y = data_sim[,"Y"], x = data_sim[,"G"], index_sup = 1:nn,
                              surrogate = data_sim[,c("S1", "S2", "S3")],
                              adjust_covariates = data_sim[,"X", drop=FALSE],
                              do_interact=FALSE, condi = TRUE)
