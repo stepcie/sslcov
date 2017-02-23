@@ -150,10 +150,6 @@ rhat_ptb_cond <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
   bw_ptb <- rhat_ssl_smres_ptb[3]
   rhat_ssl_bc_ptb <- rhat_ssl_smres_ptb[2]
   rhat_ssl_ptb <- rhat_ssl_smres_ptb[1]
-  return(list("rhat" = c("Supervised"=rhat_sup_ptb,"NoSmooth"=mean(c(fi_hat_ptb,fj_hat_ptb)), "SemiSupervised"=rhat_ssl_ptb,
-                         "SemiSupervisedBC"=rhat_ssl_bc_ptb),
-              "bw" = bw_ptb,
-              "data_sup" = data_sup_ptb,
-              "W_unlabel" = W_unlabel_ptb,
-              "beta_lm" = beta_hat_ptb)
-  )}
+  return(c("Supervised"=rhat_sup_ptb,"NoSmooth"=mean(c(fi_hat_ptb,fj_hat_ptb)),
+           "SemiSupervised"=rhat_ssl_ptb, "SemiSupervisedBC"=rhat_ssl_bc_ptb))
+  }

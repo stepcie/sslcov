@@ -104,7 +104,7 @@ rhat_ptb <- function(data, nn, outcome_name = NULL, covariate_name=NULL,
     betptb <- lm(yi_cen~data_sup_ptb[, -outcome_colnum], weights=Vi)$coef[1:ncoef]
   }
   else{
-    betptb <- lm(yi_cen ~ data_sup_ptb[, -outcome_colnum])$coef[1:ncoef] #TODO ?weights = weights[1:nn]
+    betptb <- lm(yi_cen ~ data_sup_ptb[, -outcome_colnum], weights = weights[1:nn])$coef[1:ncoef] #TODO ?
   }
   if(length(which(is.na(betptb)))>0){
     betptb[which(is.na(betptb))] <- 0 #TODO
@@ -114,5 +114,9 @@ rhat_ptb <- function(data, nn, outcome_name = NULL, covariate_name=NULL,
   ptb_ssl <- smooth_sslCPP(ri=ri_ptb, fi=fi_ptb, fnew=fj_ptb, rsup=rhat_ptb_sup, wgt=Vij_w, bw=bw, cdf_trans=cdf_trans)
   #rptb.ssl = mean(Vj*npreg(bws=bw,txdat=fi_ptb,tydat=ri_ptb*Vi,exdat=fj_ptb)$mean/
   #                  npreg(bws=bw,txdat=fi_ptb,tydat=Vi,exdat=fj_ptb)$mean,na.rm=T)/mean(Vj)
-  c("rhat_sup"=rhat_ptb_sup,"rhat_ns"=mean(c(fi_ptb,fj_ptb)), "rhat_ssl"=ptb_ssl[1], "rhat_ssl_bc"=ptb_ssl[2])
+  return(c("Supervised"=rhat_ptb_sup,
+           "NoSmooth"=mean(c(fi_ptb,fj_ptb)), 
+           "SemiSupervised"=ptb_ssl[1], 
+           "SemiSupervisedBC"=ptb_ssl[2])
+  )
 }
