@@ -153,7 +153,7 @@ rhat_ptb_cond <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
   return(list("rhat" = c("Supervised"=rhat_sup_ptb,"NoSmooth"=mean(c(fi_hat_ptb,fj_hat_ptb)), "SemiSupervised"=rhat_ssl_ptb,
                          "SemiSupervisedBC"=rhat_ssl_bc_ptb),
               "bw" = bw_ptb,
-              "data_sup" = data_sup,
-              "W_unlabel" = W_unlabel,
+              "data_sup" = data_sup_ptb,
+              "W_unlabel" = W_unlabel_ptb,
               "beta_lm" = beta_hat_ptb)
   )}
