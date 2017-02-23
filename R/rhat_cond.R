@@ -100,7 +100,9 @@ rhat_cond <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
   #SUP
   gamma_tilde <- MASS::glm.nb(covariate_counts[1:nn]~data_all[1:nn, -c(outcome_colnum, covariate_colnum, surrogate_colnums), drop=FALSE])$coef
   #TODO weights=Vi ?
-  pred_G_sup <- exp(cbind(1, data_all[1:nn, -c(outcome_colnum, covariate_colnum, surrogate_colnums)])%*%matrix(gamma_tilde, ncol=1))
+  linear_predictor <- cbind(1, data_all[1:nn, -c(outcome_colnum, covariate_colnum, surrogate_colnums)])%*%matrix(gamma_tilde, ncol=1)
+  # residuals are computed as exp(log(Y)-(linear_predictor +1))...
+  pred_G_sup <- exp(linear_predictor)
   cond_G_res_sup <- (covariate_counts[1:nn] - pred_G_sup)
 
   #yi_cen <- data_sup[, 1] - mean(data_sup[, 1]*Vi)/mean(Vi)
@@ -108,6 +110,7 @@ rhat_cond <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
   yi_cen <- linearmodel_y_sup$residuals
   
   mu_y_tilde_i <- cbind(1, data_all[, adjust_covariates_colnums]) %*% linearmodel_y_sup$coef
+  
   
   ri_hat <- yi_cen*cond_G_res_sup[1:nn]
   rhat_sup <- mean(ri_hat*Vi)/mean(Vi)
