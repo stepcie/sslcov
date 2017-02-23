@@ -20,7 +20,9 @@
 sim_data <-  function(ntot, missing=FALSE,incorrect=FALSE,
                       b_G=0.6,
                       Sigma=diag(4)){
-  # Xi <- rnorm(ntot)
+  
+   Xi <- rnorm(ntot)
+   
   # #Pi <- rbinom(ntot, size=1, prob=0.25)
   # #Gi <- rnbinom(ntot, size=1, mu = 0.3 + 15*Pi + 0*5*Xi*(b_G==0))
   # Gi <- rnbinom(ntot, size=0.1, mu = exp(1.4 + 0.3*Xi*(b_G!=0)))
@@ -55,15 +57,17 @@ sim_data <-  function(ntot, missing=FALSE,incorrect=FALSE,
   # data <- cbind(Yi, Gi, Si)
   # colnames(data) <- c("Y", "G", paste("S",1:ncol(Si), sep=""))
   # return(data)
-  Gi <- log(1+rnbinom(ntot, size=2, 0.1))
+  
+  Gi_raw <- rnbinom(ntot, size=2, 0.1)
+  Gi <- log(1 + Gi_raw)
   p.S = nrow(Sigma)-1
-  Yi <- b_G*Gi + mvrnorm(ntot,mu=rep(0,p.S+1),Sigma)
+  Yi <- b_G*Gi + mvrnorm(ntot, mu=rep(0, p.S+1), Sigma)
   Si = Yi[,-1]
   Yi = Yi[,1]
   colnames(Si) = paste("S",1:ncol(Si),sep="")
   if(incorrect){
-    Yi = Gi^2*b_G + Yi - b_G*Gi
-    Si= Si-b_G*Gi^2
+    Yi =  Yi + b_G*(Gi^2 - Gi)
+    Si = Si - b_G*Gi^2
   }
   if(missing){
     Imiss <-  as.matrix(rbinom(ntot, 1, pnorm(1-Si[,1]-Si[,2])))
@@ -74,8 +78,8 @@ sim_data <-  function(ntot, missing=FALSE,incorrect=FALSE,
   }
   colnames(Si) = paste("S",1:ncol(Si),sep="")
 
-  data <- cbind(Yi, Gi, Si, Imiss)
-  colnames(data)[1:2] <- c("Y", "G")
+  data <- cbind(Yi, Gi_raw, Xi, Si, Imiss)
+  colnames(data)[1:3] <- c("Y", "G", "X")
   return(data)
 
 }
