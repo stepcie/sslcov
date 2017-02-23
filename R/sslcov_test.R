@@ -37,25 +37,26 @@
 #'#True Covariance:
 #'cov(data_sim[,"Y"], log(1+data_sim[,"G"]))
 #'
-#'res_ssl_randomsampling <- sslcov_test(y = data_sim[,"Y"], x = log(1 + data_sim[,"G"]), index_sup = 1:nn,
+#'res_ssl_randomsampling <- sslcov_test(y = data_sim[,"Y"], x = log(1 + data_sim[,"G"]), 
+#'                                      index_sup = 1:nn,
 #'                                      surrogate = data_sim[,c("S1", "S2", "S3")],
-#'                                      #adjust_covariates = data_sim[,"X", drop=FALSE],
 #'                                      do_interact=FALSE, condi = FALSE)                                      
-#'res_ssl <- sslcov_test(y = data_sampled[,"Y"], x = log(1 + data_sampled[,"G"]), index_sup = 1:nn,
+#'res_ssl <- sslcov_test(y = data_sampled[,"Y"], x = log(1 + data_sampled[,"G"]), 
+#'                       index_sup = 1:nn,
 #'                       surrogate = data_sampled[,c("S1", "S2", "S3")],
-#'                       #adjust_covariates = data_sampled[,"X", drop=FALSE],
 #'                       sampling_weights = es$weights,
 #'                       do_interact=FALSE, condi = FALSE)
-#'res_ssl_noWeights <- sslcov_test(y = data_sampled[,"Y"], x = log(1 + data_sampled[,"G"]), index_sup = 1:nn,
+#'res_ssl_noWeights <- sslcov_test(y = data_sampled[,"Y"], x = log(1 + data_sampled[,"G"]), 
+#'                                 index_sup = 1:nn,
 #'                                 surrogate = data_sampled[,c("S1", "S2", "S3")],
-#'                                 #adjust_covariates = data_sampled[,"X", drop=FALSE],
 #'                                 do_interact=FALSE, condi = FALSE)
 #'
 #'
 #'# Conditional:
 #'
 #'cov(data_sim[,"Y"], data_sim[,"G"])
-#'cov(lm(data_sim[,"Y"]~data_sim[,"X"])$residuals, data_sim[,"G"] - exp(MASS::glm.nb(data_sim[,"G"]~data_sim[,"X"])$linear.predictors))
+#'cov(lm(data_sim[,"Y"]~data_sim[,"X"])$residuals, data_sim[,"G"] - 
+#'    exp(MASS::glm.nb(data_sim[,"G"]~data_sim[,"X"])$linear.predictors))
 #'#library(profvis)
 #'#profvis(
 #'res_ssl_random_condi <- sslcov_test(y = data_sim[,"Y"], x = data_sim[,"G"], index_sup = 1:nn,

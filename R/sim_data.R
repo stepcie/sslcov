@@ -11,7 +11,7 @@
 #' @return simulated data matrix of size \code{ntot x 4}
 #'
 #' @importFrom MASS mvrnorm
-#' @importFrom stats rnbinom rbinom pnorm
+#' @importFrom stats rnbinom rbinom pnorm rnorm
 #'
 #' @keywords internal
 #' @export
@@ -21,7 +21,7 @@ sim_data <-  function(ntot, missing=FALSE,incorrect=FALSE,
                       b_G=0.6,
                       Sigma=diag(4)){
   
-   Xi <- rnorm(ntot)
+   Xi <- stats::rnorm(ntot)
    
   # #Pi <- rbinom(ntot, size=1, prob=0.25)
   # #Gi <- rnbinom(ntot, size=1, mu = 0.3 + 15*Pi + 0*5*Xi*(b_G==0))
