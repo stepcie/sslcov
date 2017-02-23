@@ -120,7 +120,8 @@ rhat_ptb_cond <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
 
   linearmodel_y_sup_ptb <- lm(data_sup_ptb[, outcome_colnum]~data_sup_ptb[, adjust_covariates_colnums], weights=Vi)
   yi_cen_ptb <- linearmodel_y_sup_ptb$residuals
-  mu_y_tilde_i_ptb <- cbind(1, data_sup_ptb[, adjust_covariates_colnums]) %*% linearmodel_y_sup_ptb$coef
+  
+  mu_y_tilde_i_ptb <- cbind(1, data_all_ptb[, adjust_covariates_colnums]) %*% linearmodel_y_sup_ptb$coef
   
   ri_hat_ptb <- yi_cen_ptb*cond_G_res_sup[1:nn]
   rhat_sup_ptb <- mean(ri_hat_ptb*Vi)/mean(Vi)
@@ -139,8 +140,8 @@ rhat_ptb_cond <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
   pred_G_ptb <- exp(cbind(1, data_all_ptb[, -c(outcome_colnum,covariate_colnum, surrogate_colnums)])%*%matrix(gamma_hat_ptb, ncol=1))
   cond_G_res_ptb <- (covariate_counts - pred_G_ptb)
   
-  fi_hat_ptb <- (c(cbind(1, W_label_ptb)%*%beta_hat_ptb) - mu_y_tilde_i_ptb)*cond_G_res_ptb[1:nn]
-  fj_hat_ptb <- (c(cbind(1, W_unlabel_ptb)%*%beta_hat_ptb) - mu_y_tilde_i_ptb)*cond_G_res_ptb[-c(1:nn)]
+  fi_hat_ptb <- (c(cbind(1, W_label_ptb)%*%beta_hat_ptb) - mu_y_tilde_i_ptb[1:nn])*cond_G_res_ptb[1:nn]
+  fj_hat_ptb <- (c(cbind(1, W_unlabel_ptb)%*%beta_hat_ptb) - mu_y_tilde_i_ptb[-c(1:nn)])*cond_G_res_ptb[-c(1:nn)]
   #rptb.ssl = mean(Vj*npreg(bws=bw,txdat=fi_ptb,tydat=ri_ptb*Vi,exdat=fj_ptb)$mean/
   #                  npreg(bws=bw,txdat=fi_ptb,tydat=Vi,exdat=fj_ptb)$mean,na.rm=T)/mean(Vj)
   rhat_ssl_smres_ptb <- smooth_sslCPP(ri = ri_hat_ptb, fi = fi_hat_ptb, fnew = fj_hat_ptb, rsup = rhat_sup_ptb,

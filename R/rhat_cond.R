@@ -106,7 +106,8 @@ rhat_cond <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
   #yi_cen <- data_sup[, 1] - mean(data_sup[, 1]*Vi)/mean(Vi)
   linearmodel_y_sup <- lm(data_sup[, outcome_colnum]~data_sup[, adjust_covariates_colnums], weights=Vi)
   yi_cen <- linearmodel_y_sup$residuals
-  mu_y_tilde_i <- cbind(1, data_sup[, adjust_covariates_colnums]) %*% linearmodel_y_sup$coef
+  
+  mu_y_tilde_i <- cbind(1, data_all[, adjust_covariates_colnums]) %*% linearmodel_y_sup$coef
   
   ri_hat <- yi_cen*cond_G_res_sup[1:nn]
   rhat_sup <- mean(ri_hat*Vi)/mean(Vi)
@@ -124,8 +125,8 @@ rhat_cond <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
   #print(beta_hat)
   #betax <- cbind(1, data_sup[, -outcome_colnum])[, 1:ncoef]%*%beta_hat
   #plot(density(betax))
-  fi_hat <- (c(cbind(1, W_label)%*%beta_hat) - mu_y_tilde_i)*cond_G_res[1:nn]
-  fj_hat <- (c(cbind(1, W_unlabel)%*%beta_hat) - mu_y_tilde_i)*cond_G_res[-c(1:nn)]
+  fi_hat <- (c(cbind(1, W_label)%*%beta_hat) - mu_y_tilde_i[1:nn])*cond_G_res[1:nn]
+  fj_hat <- (c(cbind(1,W_unlabel)%*%beta_hat) - mu_y_tilde_i[-c(1:nn)])*cond_G_res[-c(1:nn)]
   ##rhat_ssl = mean(npreg(bws=bw,txdat=fi_hat,tydat=ri_hat, exdat = fj_hat)$mean,na.rm=T)
   rhat_ssl_smres <- smooth_sslCPP(ri = ri_hat, fi = fi_hat, fnew = fj_hat, rsup = rhat_sup,
                             wgt = weights, bw = bw, cdf_trans = cdf_trans)
