@@ -20,9 +20,9 @@
 sim_data <-  function(ntot, missing=FALSE,incorrect=FALSE,
                       b_G=0.6,
                       Sigma=diag(4)){
-  
+
    Xi <- stats::rnorm(ntot)
-   
+
   # #Pi <- rbinom(ntot, size=1, prob=0.25)
   # #Gi <- rnbinom(ntot, size=1, mu = 0.3 + 15*Pi + 0*5*Xi*(b_G==0))
   # Gi <- rnbinom(ntot, size=0.1, mu = exp(1.4 + 0.3*Xi*(b_G!=0)))
@@ -57,7 +57,7 @@ sim_data <-  function(ntot, missing=FALSE,incorrect=FALSE,
   # data <- cbind(Yi, Gi, Si)
   # colnames(data) <- c("Y", "G", paste("S",1:ncol(Si), sep=""))
   # return(data)
-  
+
   Gi_raw <- rnbinom(ntot, size=2, 0.1)
   Gi <- log(1 + Gi_raw)
   p.S = nrow(Sigma)-1

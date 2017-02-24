@@ -100,11 +100,17 @@ rhat <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
   rhat_ssl <- smooth_sslCPP(ri = ri_hat, fi = fi_hat, fnew = fj_hat, rsup = rhat_sup,
                             wgt = weights, bw = bw, cdf_trans = cdf_trans)
 
+  mij_hat <- rhat_ssl[4:length(rhat_ssl)]
   bw <- rhat_ssl[3]
   rhat_ssl_bc <- rhat_ssl[2]
   rhat_ssl <- rhat_ssl[1]
+
   return(list("rhat" = c("Supervised"=rhat_sup,"NoSmooth"=mean(c(fi_hat,fj_hat)), "SemiSupervised"=rhat_ssl,
                          "SemiSupervisedBC"=rhat_ssl_bc),
+              "var" = c("Supervised"=sum(Vi*(ri_hat-rhat_sup)^2)/(nn*sum(Vi)),
+                        "NoSmooth"=sum(Vi*(ri_hat-fi_hat)^2)/(nn*sum(Vi)),
+                        "SemiSupervised"=sum(Vi*(ri_hat-mij_hat[1:nn])^2)/(nn*sum(Vi)),
+                        "SemiSupervisedBC"=sum(Vi*(ri_hat-mij_hat[1:nn])^2)/(nn*sum(Vi))),
               "bw" = bw,
               "data_sup" = data_sup,
               "W_unlabel" = W_unlabel)
