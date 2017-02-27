@@ -27,9 +27,6 @@
 #'@param cdf_trans a logical flag indicating wether the smoothing should be
 #'performed on the data transformed with their cdf. Default is TRUE. See Details.
 #'
-#'@param ptb_nolabel a logical flag indicating whether accounting for the variation
-#'due to unlabeled data. Default is TRUE.
-#'
 #'@param weights a vector of weights in case a weighted version of the
 #'correlation has to be computed. Default is \code{NULL}, in which case, no
 #'additional weighting is done and regular perturbation is performed.
@@ -57,7 +54,7 @@
 #'
 #'@export
 rhat_ptb <- function(data, nn, outcome_name = NULL, covariate_name=NULL,
-                     surrogate_name = NULL, bw, cdf_trans = TRUE, ptb_nolabel = FALSE,
+                     surrogate_name = NULL, bw, cdf_trans = TRUE,
                      weights = NULL, ptb_beta = TRUE, adjust_covariates_name = NULL,
                      do_interact = TRUE){
 
@@ -115,8 +112,8 @@ rhat_ptb <- function(data, nn, outcome_name = NULL, covariate_name=NULL,
   #rptb.ssl = mean(Vj*npreg(bws=bw,txdat=fi_ptb,tydat=ri_ptb*Vi,exdat=fj_ptb)$mean/
   #                  npreg(bws=bw,txdat=fi_ptb,tydat=Vi,exdat=fj_ptb)$mean,na.rm=T)/mean(Vj)
   return(c("Supervised"=rhat_ptb_sup,
-           "NoSmooth"=mean(c(fi_ptb,fj_ptb)), 
-           "SemiSupervised"=ptb_ssl[1], 
+           "NoSmooth"=mean(c(fi_ptb,fj_ptb)),
+           "SemiSupervised"=ptb_ssl[1],
            "SemiSupervisedBC"=ptb_ssl[2])
   )
 }
