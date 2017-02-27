@@ -87,8 +87,8 @@ res_ssl_condi <- sslcov_test(y = data_sampled[,"Y"], x = data_sampled[,"G"], ind
                          sampling_weights = es$weights,
                          do_interact=FALSE, condi = TRUE)
 #
-res_ssl_noWeights_condi <- sslcov_test(y = data_sampled[,"Y"], x = data_sampled[,"G"], index_sup = 1:nn,
-                             surrogate = data_sampled[,c("S1", "S2", "S3")],
+res_ssl_noWeights_condi <- sslcov_test(y = data_sampled[,"Y"], x = data_sampled[,"G"],
+                             index_sup = 1:nn, surrogate = data_sampled[,c("S1", "S2", "S3")],
                              adjust_covariates = data_sampled[,"X", drop=FALSE],
                              do_interact=FALSE, condi = TRUE)
 }

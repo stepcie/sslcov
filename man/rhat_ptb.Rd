@@ -5,9 +5,8 @@
 \title{Semi-supervised correlation estimation}
 \usage{
 rhat_ptb(data, nn, outcome_name = NULL, covariate_name = NULL,
-  surrogate_name = NULL, bw, cdf_trans = TRUE, ptb_nolabel = FALSE,
-  weights = NULL, ptb_beta = TRUE, adjust_covariates_name = NULL,
-  do_interact = TRUE)
+  surrogate_name = NULL, bw, cdf_trans = TRUE, weights = NULL,
+  ptb_beta = TRUE, adjust_covariates_name = NULL, do_interact = TRUE)
 }
 \arguments{
 \item{data}{the data. The first \code{nn} rows should be the labeled data, the
@@ -29,9 +28,6 @@ column(s) from data containing the surrogate variable(s)}
 
 \item{cdf_trans}{a logical flag indicating wether the smoothing should be
 performed on the data transformed with their cdf. Default is TRUE. See Details.}
-
-\item{ptb_nolabel}{a logical flag indicating whether accounting for the variation
-due to unlabeled data. Default is TRUE.}
 
 \item{weights}{a vector of weights in case a weighted version of the
 correlation has to be computed. Default is \code{NULL}, in which case, no
