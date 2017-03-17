@@ -7,7 +7,7 @@
 rhat_ptb_cond(data, nn, outcome_name = NULL, covariate_name = NULL,
   surrogate_name = NULL, bw, cdf_trans = TRUE, ptb_nolabel = FALSE,
   weights = NULL, ptb_beta = TRUE, adjust_covariates_name = NULL,
-  do_interact = TRUE)
+  do_interact = TRUE, X = NULL)
 }
 \arguments{
 \item{data}{the data. The first \code{nn} rows should be the labeled data, the
@@ -45,6 +45,9 @@ Default is \code{NULL}.}
 
 \item{do_interact}{logical flag indicating whether interactins between \code{x} and
 covariates should be taken into account when imputing \code{y}. Default is \code{TRUE}.}
+
+\item{X}{perturbation index needed for sapply call. This is a purely artificial argument and is never
+used in the functions (only needed for sapply to work). Default is \code{NULL}.}
 }
 \value{
 a list with the following elements:\itemize{

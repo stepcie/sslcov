@@ -40,6 +40,9 @@
 #'@param do_interact logical flag indicating whether interactins between \code{x} and
 #'covariates should be taken into account when imputing \code{y}. Default is \code{FALSE}.
 #'
+#'@param X perturbation index needed for sapply call. This is a purely artificial argument and is never
+#'used in the functions (only needed for sapply to work). Default is \code{NULL}.
+#'
 #'@importFrom stats lm rbeta
 #'
 #'@return a list with the following elements:\itemize{
@@ -56,7 +59,7 @@
 rhat_ptb <- function(data, nn, outcome_name = NULL, covariate_name=NULL,
                      surrogate_name = NULL, bw, cdf_trans = TRUE,
                      weights = NULL, ptb_beta = TRUE, adjust_covariates_name = NULL,
-                     do_interact = TRUE){
+                     do_interact = TRUE, X=NULL){
 
   outcome_colnum <- which(colnames(data)==outcome_name)
   NN <- nrow(data)
