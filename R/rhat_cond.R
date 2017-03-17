@@ -134,7 +134,7 @@ rhat_cond <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
   rhat_ssl_smres <- smooth_sslCPP(ri = ri_hat, fi = fi_hat, fnew = fj_hat, rsup = rhat_sup,
                             wgt = weights, bw = bw, cdf_trans = cdf_trans)
 
-  mij_hat <- rhat_ssl[4:length(rhat_ssl)]
+  mij_hat <- rhat_ssl_smres[4:length(rhat_ssl_smres)]
   bw <- rhat_ssl_smres[3]
   rhat_ssl_bc <- rhat_ssl_smres[2]
   rhat_ssl <- rhat_ssl_smres[1]
