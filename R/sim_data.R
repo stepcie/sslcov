@@ -11,7 +11,7 @@
 #' @return simulated data matrix of size \code{ntot x 4}
 #'
 #' @importFrom MASS mvrnorm
-#' @importFrom stats rnbinom rbinom pnorm rnorm
+#' @importFrom stats rnbinom rbinom pnorm rnorm cov
 #'
 #' @keywords internal
 #' @export
@@ -76,19 +76,19 @@ sim_data <-  function(ntot, missing=FALSE,incorrect=FALSE,
     cov_X <- numeric(nMC)
     covlog_X <- numeric(nMC)
     for (j in 1:nMC){
-      Gi_raw_MC <- floor(rnbinom(ntot, size=pmax(floor(size_G + Xi%*%b_X_Gsize), 1),
+      Gi_raw_MC <- floor(stats::rnbinom(ntot, size=pmax(floor(size_G + Xi%*%b_X_Gsize), 1),
                                  prob=expit(logit(prob_G) + Xi%*%b_X_Gprob)))
       Gi_MC <- log(1 + Gi_raw_MC)
       p.S_MC = nrow(Sigma)-1
       Yi_MC <- b_G*Gi_MC + as.vector(Xi%*%b_X) + MASS::mvrnorm(ntot, mu=rep(0, p.S_MC+1), Sigma)
       Yi_MC = Yi_MC[,1]
-      cov_X[j] <- cov(Yi_MC, Gi_raw_MC)
-      covlog_X[j] <- cov(Yi_MC, Gi_MC)
+      cov_X[j] <- stats::cov(Yi_MC, Gi_raw_MC)
+      covlog_X[j] <- stats::cov(Yi_MC, Gi_MC)
     }
     cov_cond <- mean(cov_X)
     cov_cond_log <- mean(covlog_X)
   }else{
-    Gi_raw <- rnbinom(ntot, size=size_G, prob=prob_G)
+    Gi_raw <- stats::rnbinom(ntot, size=size_G, prob=prob_G)
   }
   
   Gi <- log(1 + Gi_raw)
@@ -105,7 +105,7 @@ sim_data <-  function(ntot, missing=FALSE,incorrect=FALSE,
     Si = Si - b_G*Gi^2
   }
   if(missing){
-    Imiss <-  as.matrix(rbinom(ntot, 1, pnorm(1-Si[,1]-Si[,2])))
+    Imiss <-  as.matrix(stats::rbinom(ntot, 1, stats::pnorm(1-Si[,1]-Si[,2])))
     colnames(Imiss) = paste("I_miss",1:ncol(Imiss),sep="")
     Si[Imiss==1, ] <-  landpred::VTM(apply(Si[Imiss==0,],2,mean),sum(Imiss))
   }else{
