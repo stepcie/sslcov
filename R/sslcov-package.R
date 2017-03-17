@@ -18,7 +18,7 @@
 #' @name sslcov-package
 #' @aliases sslcov
 #'
-#' @useDynLib sslcov
+#' @useDynLib sslcov, .registration = TRUE
 #' @importFrom Rcpp sourceCpp
 #'
 NULL
