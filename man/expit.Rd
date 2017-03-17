@@ -6,6 +6,12 @@
 \usage{
 expit(x)
 }
+\arguments{
+\item{x}{a real number}
+}
+\value{
+a real number on the probabilty scale (between \code{0} and \code{1})
+}
 \description{
-expit
+expit function
 }

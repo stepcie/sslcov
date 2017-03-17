@@ -6,6 +6,12 @@
 \usage{
 logit(p)
 }
+\arguments{
+\item{p}{a number between \code{0} and \code{1} (e.g. a probability)}
+}
+\value{
+a real number between \code{-Inf} and \code{Inf}
+}
 \description{
-logit
+logit function
 }
