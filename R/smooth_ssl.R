@@ -66,5 +66,5 @@ smooth_ssl <- function(ri, fi, fnew, wgti = NULL, bw = NULL, cdf_trans = TRUE, r
 
   rhat.ssl.bc <- rhat.ssl - (mean(rhat.num[1:n_learn]/rhat.den[1:n_learn]*wgti)/mean(wgti)-rsup)
 
-  return(c(rhat.ssl, rhat.ssl.bc, bw,rhat.num/rhat.den))
+  return(c(rhat.ssl, rhat.ssl.bc, bw, rhat.num/rhat.den))
 }

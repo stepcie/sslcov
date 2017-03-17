@@ -5,13 +5,14 @@
 \title{Simulating data}
 \usage{
 sim_data(ntot, missing = FALSE, incorrect = FALSE, b_G = 0.6,
-  Sigma = diag(4))
+  b_X = c(0.02, 0.3, -0.12), b_X_Gsize = c(0.04, -2, -3),
+  b_X_Gprob = c(-0.01, 0.5, 1), Sigma = diag(4), cond_cov = FALSE)
 }
 \arguments{
 \item{ntot}{the number of observation to simulate}
 
-\item{missing}{logical flag wether
-. Default is FALSE.}
+\item{missing}{logical flag whether missing indicator should 
+be used. Default is \code{FALSE}.}
 
 \item{b_G}{strength parameter for linear association between the covariate "G"
 and the outcome of interest "Y".}

@@ -2,8 +2,8 @@
 #'
 #' @param ntot the number of observation to simulate
 #'
-#' @param missing logical flag wether
-#' . Default is FALSE.
+#' @param missing logical flag whether missing indicator should 
+#' be used. Default is \code{FALSE}.
 #'
 #' @param b_G strength parameter for linear association between the covariate "G"
 #' and the outcome of interest "Y".
@@ -18,19 +18,23 @@
 
 
 sim_data <-  function(ntot, missing=FALSE,incorrect=FALSE,
-                      b_G=0.6,
-                      Sigma=diag(4)){
-
-   Xi <- stats::rnorm(ntot)
-
+                      b_G=0.6, 
+                      b_X=c(0.02, 0.3, -0.12), 
+                      b_X_Gsize = c(0.04, -2, -3), b_X_Gprob=c(-0.01, 0.5, 1),
+                      Sigma=diag(4), cond_cov=FALSE){
+  
+  Xi <- cbind("Age"=stats::rnorm(ntot, m=50, sd=7),
+              "Race"=stats::rbinom(ntot, size=1, prob=0.7),
+              "Gender"= stats::rbinom(ntot, size=1, prob=0.5))
+  
   # #Pi <- rbinom(ntot, size=1, prob=0.25)
   # #Gi <- rnbinom(ntot, size=1, mu = 0.3 + 15*Pi + 0*5*Xi*(b_G==0))
   # Gi <- rnbinom(ntot, size=0.1, mu = exp(1.4 + 0.3*Xi*(b_G!=0)))
   # crp <- MASS::mvrnorm(ntot, c(0,0,0,0), Sigma) + b_X*b_G*Xi + b_G*Gi + rnorm(ntot,0,0.3)
   # #mtemp <- MASS::glm.nb(Gi~Xi)
   # #ist(Gi, n=100)
-
-
+  
+  
   # Gi <- rnbinom(ntot, size=1, 0.3)
   # Gi <- log(Gi+1)
   # #Gi <- rbinom(ntot, size=3, 0.1)
@@ -57,13 +61,44 @@ sim_data <-  function(ntot, missing=FALSE,incorrect=FALSE,
   # data <- cbind(Yi, Gi, Si)
   # colnames(data) <- c("Y", "G", paste("S",1:ncol(Si), sep=""))
   # return(data)
-
-  Gi_raw <- rnbinom(ntot, size=2, 0.1)
+  
+  size_G=1
+  prob_G=0.2
+  mG=size_G*(1-prob_G)/prob_G
+  
+  #E(G|X)=E(G)
+  cov_cond <- NULL
+  if(cond_cov){
+    Gi_raw <- rnbinom(ntot, size=pmax(floor(size_G + Xi%*%b_X_Gsize), 1), 
+                      prob=expit(logit(prob_G) + Xi%*%b_X_Gprob))
+    
+    nMC <- 1000
+    cov_X <- numeric(nMC)
+    covlog_X <- numeric(nMC)
+    for (j in 1:nMC){
+      Gi_raw_MC <- floor(rnbinom(ntot, size=pmax(floor(size_G + Xi%*%b_X_Gsize), 1),
+                                 prob=expit(logit(prob_G) + Xi%*%b_X_Gprob)))
+      Gi_MC <- log(1 + Gi_raw_MC)
+      p.S_MC = nrow(Sigma)-1
+      Yi_MC <- b_G*Gi_MC + as.vector(Xi%*%b_X) + MASS::mvrnorm(ntot, mu=rep(0, p.S_MC+1), Sigma)
+      Yi_MC = Yi_MC[,1]
+      cov_X[j] <- cov(Yi_MC, Gi_raw_MC)
+      covlog_X[j] <- cov(Yi_MC, Gi_MC)
+    }
+    cov_cond <- mean(cov_X)
+    cov_cond_log <- mean(covlog_X)
+  }else{
+    Gi_raw <- rnbinom(ntot, size=size_G, prob=prob_G)
+  }
+  
   Gi <- log(1 + Gi_raw)
   p.S = nrow(Sigma)-1
-  Yi <- b_G*Gi + mvrnorm(ntot, mu=rep(0, p.S+1), Sigma)
+  Yi <- b_G*Gi + as.vector(Xi%*%b_X) + MASS::mvrnorm(ntot, mu=rep(0, p.S+1), Sigma)
   Si = Yi[,-1]
   Yi = Yi[,1]
+  
+  
+  
   colnames(Si) = paste("S",1:ncol(Si),sep="")
   if(incorrect){
     Yi =  Yi + b_G*(Gi^2 - Gi)
@@ -77,9 +112,10 @@ sim_data <-  function(ntot, missing=FALSE,incorrect=FALSE,
     Imiss = NULL
   }
   colnames(Si) = paste("S",1:ncol(Si),sep="")
-
+  
   data <- cbind(Yi, Gi_raw, Xi, Si, Imiss)
   colnames(data)[1:3] <- c("Y", "G", "X")
-  return(data)
-
+  
+  return(list("data"=data, "cov_cond"=c(cov_cond, cov_cond_log)))
+  
 }
