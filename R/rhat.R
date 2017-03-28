@@ -62,7 +62,7 @@ rhat <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
   if(is.null(weights)){
     Vij <- rep(1,NN)
   }else{
-    Vij <-  c(weights, rep(1,NN-nn))
+    Vij <-  c(weights, rep(1,NN-nn)) # random obs have weight of 1 of being sampled for supervised
   }
   Vi <- Vij[1:nn]
 
@@ -85,6 +85,7 @@ rhat <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
   yi_cen <- data_sup[, 1] - mean(data_sup[, 1]*Vi)/mean(Vi)
 
   ri_hat <- yi_cen*data_sup[, covariate_name]
+  browser()
   rhat_sup <- mean(ri_hat*Vi)/mean(Vi)
 
   bethat <- lm(yi_cen~data_sup[, -outcome_colnum], weights = Vi)$coef[1:ncoef]
