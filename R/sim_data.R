@@ -68,6 +68,7 @@ sim_data <-  function(ntot, missing=FALSE,incorrect=FALSE,
   
   #E(G|X)=E(G)
   cov_cond_est <- NULL
+  cov_cond_est_log <- NULL
   if(cond_cov){
     Gi_raw <- rnbinom(ntot, size=pmax(floor(size_G + Xi%*%b_X_Gsize), 1), 
                       prob=expit(logit(prob_G) + Xi%*%b_X_Gprob))

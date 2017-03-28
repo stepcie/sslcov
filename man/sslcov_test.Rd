@@ -31,7 +31,7 @@ covariates should be taken into account when imputing \code{y}. Default is \code
 \item{condi}{logical flag indicating whether the covariance estimated should be condition on the
 covariates indicated in . Default is \code{TRUE}.}
 
-\item{ptb}{logical flag indicating whether to use perturbation to calculate the variance instead of using the asymptotic variance}
+\item{do_ptb}{logical flag indicating whether to use perturbation to calculate the variance instead of using the asymptotic variance}
 }
 \description{
 Wrapper function for testing TODO
@@ -87,9 +87,9 @@ cov(lm(data_sim[,"Y"]~data_sim[, c("Age", "Race", "Gender")])$residuals, data_si
 #library(profvis)
 #profvis(
 res_ssl_random_condi <- sslcov_test(y = data_sim[,"Y"], x = data_sim[,"G"], index_sup = 1:nn,
-                             surrogate = data_sim[,c("S1", "S2", "S3")],
-                             adjust_covariates = data_sim[, c("Age", "Race", "Gender"), drop=FALSE],
-                             do_interact=FALSE, condi = TRUE, do_ptb=FALSE)
+                         surrogate = data_sim[,c("S1", "S2", "S3")],
+                         adjust_covariates = data_sim[, c("Age", "Race", "Gender"), drop=FALSE],
+                         do_interact=FALSE, condi = TRUE, do_ptb=FALSE)
 #)
 res_ssl_condi <- sslcov_test(y = data_sampled[,"Y"], x = data_sampled[,"G"], index_sup = 1:nn,
                          surrogate = data_sampled[,c("S1", "S2", "S3")],
@@ -98,9 +98,9 @@ res_ssl_condi <- sslcov_test(y = data_sampled[,"Y"], x = data_sampled[,"G"], ind
                          do_interact=FALSE, condi = TRUE, do_ptb=FALSE)
 #
 res_ssl_noWeights_condi <- sslcov_test(y = data_sampled[,"Y"], x = data_sampled[,"G"],
-                             index_sup = 1:nn, surrogate = data_sampled[,c("S1", "S2", "S3")],
-                             adjust_covariates = data_sampled[, c("Age", "Race", "Gender"), drop=FALSE],
-                             do_interact=FALSE, condi = TRUE, do_ptb=FALSE)
+                           index_sup = 1:nn, surrogate = data_sampled[,c("S1", "S2", "S3")],
+                           adjust_covariates = data_sampled[, c("Age", "Race", "Gender"), drop=FALSE],
+                           do_interact=FALSE, condi = TRUE, do_ptb=FALSE)
 }
 
 }
