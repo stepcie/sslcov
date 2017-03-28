@@ -72,18 +72,21 @@
 #'#profvis(
 #'res_ssl_random_condi <- sslcov_test(y = data_sim[,"Y"], x = data_sim[,"G"], index_sup = 1:nn,
 #'                          surrogate = data_sim[,c("S1", "S2", "S3")],
-#'                          adjust_covariates = data_sim[, c("Age", "Race", "Gender"), drop=FALSE],
+#'                          adjust_covariates = data_sim[, c("Age", "Race", "Gender"), 
+#'                                                        drop=FALSE],
 #'                          do_interact=FALSE, condi = TRUE, do_ptb=FALSE)
 #'#)
 #'res_ssl_condi <- sslcov_test(y = data_sampled[,"Y"], x = data_sampled[,"G"], index_sup = 1:nn,
 #'                          surrogate = data_sampled[,c("S1", "S2", "S3")],
-#'                          adjust_covariates = data_sampled[, c("Age", "Race", "Gender"), drop=FALSE],
+#'                          adjust_covariates = data_sampled[, c("Age", "Race", "Gender"),
+#'                                                            drop=FALSE],
 #'                          sampling_weights = es$weights,
 #'                          do_interact=FALSE, condi = TRUE, do_ptb=FALSE)
 #'#
 #'res_ssl_noWeights_condi <- sslcov_test(y = data_sampled[,"Y"], x = data_sampled[,"G"],
 #'                            index_sup = 1:nn, surrogate = data_sampled[,c("S1", "S2", "S3")],
-#'                            adjust_covariates = data_sampled[, c("Age", "Race", "Gender"), drop=FALSE],
+#'                            adjust_covariates = data_sampled[, c("Age", "Race", "Gender"), 
+#'                                                              drop=FALSE],
 #'                            do_interact=FALSE, condi = TRUE, do_ptb=FALSE)
 #'}
 #'

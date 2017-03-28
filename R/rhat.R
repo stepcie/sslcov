@@ -85,7 +85,6 @@ rhat <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
   yi_cen <- data_sup[, 1] - mean(data_sup[, 1]*Vi)/mean(Vi)
 
   ri_hat <- yi_cen*data_sup[, covariate_name]
-  browser()
   rhat_sup <- mean(ri_hat*Vi)/mean(Vi)
 
   bethat <- lm(yi_cen~data_sup[, -outcome_colnum], weights = Vi)$coef[1:ncoef]
