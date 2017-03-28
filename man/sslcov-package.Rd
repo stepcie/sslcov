@@ -4,16 +4,16 @@
 \name{sslcov-package}
 \alias{sslcov-package}
 \alias{sslcov}
-\title{ssl}
+\title{sslcov}
 \description{
-This package implelments
+This package implements semi-supervised estimation and testing of covariance
 }
 \details{
 \tabular{ll}{
 Package: \tab sslcov\cr
 Type: \tab Package\cr
-Version: \tab sslcov.0.0.5\cr
-Date: \tab 2016-07-25\cr
+Version: \tab sslcov.0.1.1\cr
+Date: \tab 2017-03-27\cr
 License: \tab \href{http://www.gnu.org/licenses/lgpl.txt}{MIT}\cr
 }
 The main function
