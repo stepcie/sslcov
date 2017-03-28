@@ -28,10 +28,13 @@
 #'nn_divide <- 10
 #'NN <- 2000
 #'nn <- NN/nn_divide
-#'mySigma <- matrix(rep(0.3,16), 4, 4) + 0.7*diag(4)
-#'beta <- 0.6 #0
+#'mySigma <- matrix(rep(0.6,16), 4, 4) + 0.4*diag(4)
+#'mySigma[3,4] <- mySigma[3,4] + 0.2
+#'mySigma[4,3] <- mySigma[4,3] + 0.2
+#'beta <- 0 #0.6 #
+#'beta_X <- c(0, 0, 0) # c(0.02, 0.3, -0.12) #
 #'set.seed(1234)
-#'data_sim <- sim_data(ntot = NN, Sigma = mySigma, b_G = beta, cond_cov = TRUE)
+#'data_sim <- sim_data(ntot = NN, Sigma = 3*mySigma, b_G = beta, b_X = beta_X, cond_cov = TRUE)
 #'cov_sim <- data_sim$cov_cond
 #'data_sim <- data_sim$data
 #'cov_sim
@@ -41,6 +44,8 @@
 #'
 #'#True Covariance:
 #'cov(data_sim[,"Y"], log(1+data_sim[,"G"]))
+#'cov(data_sampled[1:nn,"Y"], log(1+data_sampled[1:nn,"G"]))
+#'cov(data_sim[1:nn,"Y"], log(1+data_sim[1:nn,"G"]))
 #'
 #'res_ssl_randomsampling <- sslcov_test(y = data_sim[,"Y"], x = log(1 + data_sim[,"G"]),
 #'                                      index_sup = 1:nn,
@@ -58,26 +63,27 @@
 #'
 #'
 #'# Conditional:
-#'
+#'cov_sim
 #'cov(data_sim[,"Y"], data_sim[,"G"])
-#'cov(lm(data_sim[,"Y"]~data_sim[,"X"])$residuals, data_sim[,"G"] -
-#'    exp(MASS::glm.nb(data_sim[,"G"]~data_sim[,"X"])$linear.predictors))
+#'cov(data_sim[,"Y"], log(1+data_sim[,"G"]))
+#'cov(lm(data_sim[,"Y"]~data_sim[, c("Age", "Race", "Gender")])$residuals, data_sim[,"G"] -
+#'    exp(MASS::glm.nb(data_sim[,"G"]~data_sim[, c("Age", "Race", "Gender")])$linear.predictors))
 #'#library(profvis)
 #'#profvis(
 #'res_ssl_random_condi <- sslcov_test(y = data_sim[,"Y"], x = data_sim[,"G"], index_sup = 1:nn,
 #'                              surrogate = data_sim[,c("S1", "S2", "S3")],
-#'                              adjust_covariates = data_sim[,"X", drop=FALSE],
+#'                              adjust_covariates = data_sim[, c("Age", "Race", "Gender"), drop=FALSE],
 #'                              do_interact=FALSE, condi = TRUE, ptb=FALSE)
 #'#)
 #'res_ssl_condi <- sslcov_test(y = data_sampled[,"Y"], x = data_sampled[,"G"], index_sup = 1:nn,
 #'                          surrogate = data_sampled[,c("S1", "S2", "S3")],
-#'                          adjust_covariates = data_sampled[,"X", drop=FALSE],
+#'                          adjust_covariates = data_sampled[, c("Age", "Race", "Gender"), drop=FALSE],
 #'                          sampling_weights = es$weights,
 #'                          do_interact=FALSE, condi = TRUE, ptb=FALSE)
 #'#
 #'res_ssl_noWeights_condi <- sslcov_test(y = data_sampled[,"Y"], x = data_sampled[,"G"],
 #'                              index_sup = 1:nn, surrogate = data_sampled[,c("S1", "S2", "S3")],
-#'                              adjust_covariates = data_sampled[,"X", drop=FALSE],
+#'                              adjust_covariates = data_sampled[, c("Age", "Race", "Gender"), drop=FALSE],
 #'                              do_interact=FALSE, condi = TRUE, ptb=FALSE)
 #'}
 #'
