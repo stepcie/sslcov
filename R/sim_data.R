@@ -68,6 +68,7 @@ sim_data <-  function(ntot, missing=FALSE,incorrect=FALSE,
   
   #E(G|X)=E(G)
   cov_cond_est <- NULL
+  cov_cond_est_log <- NULL
   if(cond_cov){
     Gi_raw <- rnbinom(ntot, size=pmax(floor(size_G + Xi%*%b_X_Gsize), 1), 
                       prob=expit(logit(prob_G) + Xi%*%b_X_Gprob))
@@ -84,8 +85,8 @@ sim_data <-  function(ntot, missing=FALSE,incorrect=FALSE,
       p.S_MC = nrow(Sigma)-1
       Yi_MC <- b_G*Gi_MC + as.vector(Xi%*%b_X) + MASS::mvrnorm(ntot, mu=rep(0, p.S_MC+1), Sigma)
       Yi_MC = Yi_MC[,1]
-      cov_X[j] <- stats::cov(Yi_MC-mean(Yi_MC), Gi_raw_MC-mean(Gi_raw_MC))
-      covlog_X[j] <- stats::cov(Yi_MC-mean(Yi_MC), Gi_MC-mean(Gi_MC))
+      cov_X[j] <- stats::cov(Yi_MC, Gi_raw_MC)
+      covlog_X[j] <- stats::cov(Yi_MC, Gi_MC)
     }
     cov_cond_est <- mean(cov_X)
     cov_cond_est_log <- mean(covlog_X)

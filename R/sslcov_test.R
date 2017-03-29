@@ -16,7 +16,7 @@
 #'
 #'@param condi logical flag indicating whether the covariance estimated should be condition on the
 #'covariates indicated in . Default is \code{TRUE}.
-#'@param ptb logical flag indicating whether to use perturbation to calculate the variance instead of using the asymptotic variance
+#'@param do_ptb logical flag indicating whether to use perturbation to calculate the variance instead of using the asymptotic variance
 #'
 #'@importFrom stats na.omit sd quantile qnorm
 #'
@@ -33,7 +33,7 @@
 #'mySigma[4,3] <- mySigma[4,3] + 0.2
 #'beta <- 0 #0.6 #
 #'beta_X <- c(0, 0, 0) # c(0.02, 0.3, -0.12) #
-#'set.seed(1234)
+#'#set.seed(1234)
 #'data_sim <- sim_data(ntot = NN, Sigma = 3*mySigma, b_G = beta, b_X = beta_X, cond_cov = TRUE)
 #'cov_sim <- data_sim$cov_cond
 #'data_sim <- data_sim$data
@@ -50,16 +50,16 @@
 #'res_ssl_randomsampling <- sslcov_test(y = data_sim[,"Y"], x = log(1 + data_sim[,"G"]),
 #'                                      index_sup = 1:nn,
 #'                                      surrogate = data_sim[,c("S1", "S2", "S3")],
-#'                                      do_interact=FALSE, condi = FALSE, ptb=FALSE)
+#'                                      do_interact=FALSE, condi = FALSE, do_ptb=FALSE)
 #'res_ssl <- sslcov_test(y = data_sampled[,"Y"], x = log(1 + data_sampled[,"G"]),
 #'                       index_sup = 1:nn,
 #'                       surrogate = data_sampled[,c("S1", "S2", "S3")],
 #'                       sampling_weights = es$weights,
-#'                       do_interact=FALSE, condi = FALSE, ptb=FALSE)
+#'                       do_interact=FALSE, condi = FALSE, do_ptb=FALSE)
 #'res_ssl_noWeights <- sslcov_test(y = data_sampled[,"Y"], x = log(1 + data_sampled[,"G"]),
 #'                                 index_sup = 1:nn,
 #'                                 surrogate = data_sampled[,c("S1", "S2", "S3")],
-#'                                 do_interact=FALSE, condi = FALSE, ptb=FALSE)
+#'                                 do_interact=FALSE, condi = FALSE, do_ptb=FALSE)
 #'
 #'
 #'# Conditional:
@@ -71,26 +71,29 @@
 #'#library(profvis)
 #'#profvis(
 #'res_ssl_random_condi <- sslcov_test(y = data_sim[,"Y"], x = data_sim[,"G"], index_sup = 1:nn,
-#'                              surrogate = data_sim[,c("S1", "S2", "S3")],
-#'                              adjust_covariates = data_sim[, c("Age", "Race", "Gender"), drop=FALSE],
-#'                              do_interact=FALSE, condi = TRUE, ptb=FALSE)
+#'                          surrogate = data_sim[,c("S1", "S2", "S3")],
+#'                          adjust_covariates = data_sim[, c("Age", "Race", "Gender"), 
+#'                                                        drop=FALSE],
+#'                          do_interact=FALSE, condi = TRUE, do_ptb=FALSE)
 #'#)
 #'res_ssl_condi <- sslcov_test(y = data_sampled[,"Y"], x = data_sampled[,"G"], index_sup = 1:nn,
 #'                          surrogate = data_sampled[,c("S1", "S2", "S3")],
-#'                          adjust_covariates = data_sampled[, c("Age", "Race", "Gender"), drop=FALSE],
+#'                          adjust_covariates = data_sampled[, c("Age", "Race", "Gender"),
+#'                                                            drop=FALSE],
 #'                          sampling_weights = es$weights,
-#'                          do_interact=FALSE, condi = TRUE, ptb=FALSE)
+#'                          do_interact=FALSE, condi = TRUE, do_ptb=FALSE)
 #'#
 #'res_ssl_noWeights_condi <- sslcov_test(y = data_sampled[,"Y"], x = data_sampled[,"G"],
-#'                              index_sup = 1:nn, surrogate = data_sampled[,c("S1", "S2", "S3")],
-#'                              adjust_covariates = data_sampled[, c("Age", "Race", "Gender"), drop=FALSE],
-#'                              do_interact=FALSE, condi = TRUE, ptb=FALSE)
+#'                            index_sup = 1:nn, surrogate = data_sampled[,c("S1", "S2", "S3")],
+#'                            adjust_covariates = data_sampled[, c("Age", "Race", "Gender"), 
+#'                                                              drop=FALSE],
+#'                            do_interact=FALSE, condi = TRUE, do_ptb=FALSE)
 #'}
 #'
 #'@export
 sslcov_test <- function(y, x, index_sup, surrogate, adjust_covariates=NULL,
                         sampling_weights = rep(1/length(y), length(index_sup)),
-                        nperturb = 500, do_interact=TRUE, condi=FALSE, ptb=TRUE){
+                        nperturb = 500, do_interact=TRUE, condi=FALSE, do_ptb=TRUE){
   
   if(condi & is.null(adjust_covariates)){
     stop("no covariates to condition on")
@@ -138,7 +141,7 @@ sslcov_test <- function(y, x, index_sup, surrogate, adjust_covariates=NULL,
   
   bw <- rhat_out$bw
   
-  if(ptb){
+  if(do_ptb){
     if(condi){
       res_ptb <-  na.omit(t(sapply(X = 1:nperturb, FUN = rhat_ptb_cond, data = data_ord, nn = n,
                                    outcome_name = "y", covariate_name = "x",

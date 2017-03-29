@@ -29,16 +29,15 @@ extremeSampling <- function(data, nn, surrogate_name=NULL){
   ind_extreme <- c(ind_lowlow, ind_highhigh, ind_lowhigh, ind_highlow)
   ind_notextreme <- setdiff(1:ntot, ind_extreme)
   ind_random <- sample(ind_notextreme, nsamp/4, replace=FALSE)
-  ind_samp <-  c(ind_extreme, ind_random) # ask Stephanie about the union
+  ind_samp <-  c(ind_extreme, ind_random)
 
   delta <-  1*(ind_samp %in% ind_extreme)
-  vri <-  1*(ind_samp %in% ind_random)
   pi <-  (nsamp/4)/ntot
-  wi  <-  delta + (1-delta)*vri/pi
-  wgt <- c(wi, rep(1/pi, ntot-nsamp))
-
-  wi <- wi/max(wi)
-  wgt <- wgt/max(wgt)
+  wi  <-  delta*pi + (1-delta)*1
+  wgt <- c(wi, rep(1, ntot-nsamp))
+  
+  #wi <- wi/max(wi)
+  #wgt <- wgt/max(wgt)
 
   return(list("extreme_index"=ind_samp, "weights" = wi))
 }

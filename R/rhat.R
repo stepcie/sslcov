@@ -62,7 +62,7 @@ rhat <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
   if(is.null(weights)){
     Vij <- rep(1,NN)
   }else{
-    Vij <-  c(weights, rep(1,NN-nn))
+    Vij <-  c(weights, rep(1,NN-nn)) # random obs have weight of 1 of being sampled for supervised
   }
   Vi <- Vij[1:nn]
 
