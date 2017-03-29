@@ -96,10 +96,12 @@ rhat_ptb <- function(data, nn, outcome_name = NULL, covariate_name=NULL,
   W_unlabel_ptb <- data_all_ptb[-(1:nn), -outcome_colnum]
 
   data_sup_ptb <- data_all_ptb[1:nn, ]
-
-  ri_ptb <- (data_sup_ptb[, outcome_colnum] - mean(data_sup_ptb[, outcome_colnum]*Vi)/mean(Vi))*data_sup_ptb[, covariate_colnum]
-  rhat_ptb_sup <- mean(ri_ptb*Vi)/mean(Vi)
+  
   yi_cen <- data_sup_ptb[, outcome_colnum] - mean(data_sup_ptb[, outcome_colnum]*Vi)/mean(Vi)
+  
+  ri_ptb <- yi_cen*data_sup_ptb[, covariate_colnum]
+  rhat_ptb_sup <- mean(ri_ptb*Vi)/mean(Vi)
+  
   if(ptb_beta){
     betptb <- lm(yi_cen~data_sup_ptb[, -outcome_colnum], weights=Vi)$coef[1:ncoef]
   }
