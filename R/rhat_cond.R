@@ -64,7 +64,7 @@ rhat_cond <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
     Vij <- rep(NN/nn, NN)
   }else{
     wi0 <- max(weights) # sampling weight of a random obs 
-    weights <- c(weights, rep(wi0, NN-nn))
+    Vij <- c(weights, rep(wi0, NN-nn))
   }
   Vi <- Vij[1:nn]
   
