@@ -7,6 +7,12 @@
 #' @param surrogate_name a character string vector containing the name of the
 #'columns from data containing the surrogate variables (at least 2)
 #'
+#'@return a list :
+#'\code{extreme_index}
+#'\code{weights}: the sampling weights associated with each sampled observation (inverse of their 
+#'respective sampling probabilities). Can take only two values: 1 for extremes or wi0 for random
+#'observations (wi0 > 1).
+#'
 #'@export
 extremeSampling <- function(data, nn, surrogate_name=NULL){
 
@@ -32,8 +38,8 @@ extremeSampling <- function(data, nn, surrogate_name=NULL){
   ind_samp <-  c(ind_extreme, ind_random)
 
   delta <-  1*(ind_samp %in% ind_extreme)
-  pi <-  (nsamp/4)/ntot
-  wi  <-  delta*pi + (1-delta)*1
+  pi0 <-  (nsamp/4)/ntot
+  wi  <-  delta + (1-delta)*1/pi0
   wgt <- c(wi, rep(1, ntot-nsamp))
   
   #wi <- wi/max(wi)

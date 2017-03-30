@@ -33,7 +33,7 @@
 #'mySigma[4,3] <- mySigma[4,3] + 0.2
 #'beta <- 0 #0.6 #
 #'beta_X <- c(0, 0, 0) # c(0.02, 0.3, -0.12) #
-#'#set.seed(1234)
+#'#set.seed(54321)
 #'data_sim <- sim_data(ntot = NN, Sigma = 3*mySigma, b_G = beta, b_X = beta_X, cond_cov = TRUE)
 #'cov_sim <- data_sim$cov_cond
 #'data_sim <- data_sim$data
@@ -49,6 +49,11 @@
 #'
 #'res_ssl_randomsampling <- sslcov_test(y = data_sim[,"Y"], x = log(1 + data_sim[,"G"]),
 #'                                      index_sup = 1:nn,
+#'                                      surrogate = data_sim[,c("S1", "S2", "S3")],
+#'                                      do_interact=FALSE, condi = FALSE, do_ptb=FALSE)
+#'res_ssl_extremeWeighted <- sslcov_test(y = data_sim[,"Y"], x = log(1 + data_sim[,"G"]),
+#'                                      index_sup = es$extreme_index,
+#'                                      sampling_weights = es$weights,
 #'                                      surrogate = data_sim[,c("S1", "S2", "S3")],
 #'                                      do_interact=FALSE, condi = FALSE, do_ptb=FALSE)
 #'res_ssl <- sslcov_test(y = data_sampled[,"Y"], x = log(1 + data_sampled[,"G"]),
@@ -92,7 +97,7 @@
 #'
 #'@export
 sslcov_test <- function(y, x, index_sup, surrogate, adjust_covariates=NULL,
-                        sampling_weights = rep(1/length(y), length(index_sup)),
+                        sampling_weights = rep(length(index_sup)/length(y), length(index_sup)),
                         nperturb = 500, do_interact=TRUE, condi=FALSE, do_ptb=TRUE){
   
   if(condi & is.null(adjust_covariates)){

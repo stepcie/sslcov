@@ -61,11 +61,16 @@ rhat_cond <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
   stopifnot(length(weights)==nn)
 
   if(is.null(weights)){
-    Vij <- rep(1,NN)
+    Vij <- rep(NN/nn, NN)
   }else{
-    Vij <-  c(weights, rep(1, NN-nn)) # random obs have weight of 1 of beng sampled for supervised
+    wi0 <- max(weights) # sampling weight of a random obs 
+    weights <- c(weights, rep(wi0, NN-nn))
   }
   Vi <- Vij[1:nn]
+  
+  #sampling probabilities :
+  pij <- 1/Vij
+  pi <- 1/Vi
 
   data_centered <- data[, covariate_name, drop=FALSE]# - mean(data[, covariate_name]*Vij, na.rm = TRUE)/mean(Vij) # center G with mean from the entire dataset
   data_all <- cbind(data[, outcome_colnum, drop=FALSE], data_centered, data[, surrogate_name, drop=FALSE])
@@ -140,10 +145,10 @@ rhat_cond <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
   rhat_ssl <- rhat_ssl_smres[1]
   return(list("rhat" = c("Supervised"=rhat_sup,"NoSmooth"=mean(c(fi_hat,fj_hat)), "SemiSupervised"=rhat_ssl,
                          "SemiSupervisedBC"=rhat_ssl_bc),
-              "var" = c("Supervised"=sum(Vi*(ri_hat-rhat_sup)^2)/(nn*sum(Vi)),
-                        "NoSmooth"=sum(Vi*(ri_hat-fi_hat)^2)/(nn*sum(Vi)),
-                        "SemiSupervised"=sum(Vi*(ri_hat-mij_hat[1:nn])^2)/(nn*sum(Vi)),
-                        "SemiSupervisedBC"=sum(Vi*(ri_hat-mij_hat[1:nn])^2)/(nn*sum(Vi))),
+              "var" = c("Supervised"=mean(pi^2*(ri_hat-rhat_sup)^2/nn)/mean(pi^2),
+                        "NoSmooth"=mean(pi^2*(ri_hat-fi_hat)^2/nn)/mean(pi^2),
+                        "SemiSupervised"=mean(pi^2*(ri_hat-mij_hat[1:nn])^2/nn)/mean(pi^2),
+                        "SemiSupervisedBC"=mean(pi^2*(ri_hat-mij_hat[1:nn])^2/nn)/mean(pi^2)),
               "bw" = bw,
               "data_sup" = data_sup,
               "W_unlabel" = W_unlabel,

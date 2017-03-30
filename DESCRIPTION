@@ -1,11 +1,11 @@
 Package: sslcov
 Type: Package
 Title: Semi-Supervised Estimation Of Covariance
-Version: 0.1.1
-Date: 2017-03-28
+Version: 0.1.2
+Date: 2017-03-30
 Author: Boris P. Hejblum, Stephanie Chan, Tianxi Cai
 Maintainer: Stephanie Chan <stephaniechan@fas.harvard.edu>
-Description: More about what it does.
+Description: This package implements semi-supervised estimation and testing of covariance and conditional covariance.
 LinkingTo: Rcpp, RcppArmadillo
 Imports:
     Rcpp (>= 0.12.1),

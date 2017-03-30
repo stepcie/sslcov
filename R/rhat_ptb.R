@@ -73,11 +73,12 @@ rhat_ptb <- function(data, nn, outcome_name = NULL, covariate_name=NULL,
   #Vij <- c(rbeta(nn, 0.5, 1.5)*4, rep(1,NN-nn))
 
   if(is.null(weights)){
-    weights <- rep(1, nn)
+    weights <- rep(NN/nn, nn)
   }
   Vij_w <- Vij
   Vij_w[1:nn] <- Vij_w[1:nn]*weights
   Vi <- Vij_w[1:nn]
+  
 
   #data_centered_ptb <- data[, covariate_name, drop=FALSE] - mean(data[, covariate_name]*Vij)/mean(Vij)
   data_centered_ptb <- data[, covariate_name, drop=FALSE] - mean(data[, covariate_name])

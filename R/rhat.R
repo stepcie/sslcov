@@ -53,19 +53,24 @@
 rhat <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
                  surrogate_name=NULL, bw=NULL, cdf_trans=TRUE,
                  weights=NULL, adjust_covariates_name=NULL, do_interact=TRUE){
-
-
+  
+  
   outcome_colnum <- which(colnames(data)==outcome_name)
   NN <- nrow(data)
   stopifnot(length(weights)==nn)
-
+  
   if(is.null(weights)){
     Vij <- rep(1,NN)
   }else{
-    Vij <-  c(weights, rep(1,NN-nn)) # random obs have weight of 1 of being sampled for supervised
+    wi0 <- max(weights) # sampling weight of random obs 
+    Vij <-  c(weights, rep(wi0,NN-nn)) # random obs have weight of 1 of being sampled for supervised
   }
   Vi <- Vij[1:nn]
-
+  
+  #sampling probabilities :
+  #pij <- 1/Vij
+  pi <- 1/Vi
+  
   data_centered <- data[, covariate_name, drop=FALSE] - mean(data[, covariate_name], na.rm = TRUE)#mean(data[, covariate_name]*Vij, na.rm = TRUE)/mean(Vij) # center G with mean from the entire dataset
   data_all <- cbind(data[, outcome_colnum], data_centered, data[, surrogate_name])
   if(!is.null(adjust_covariates_name)){
@@ -76,17 +81,17 @@ rhat <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
     data_all <- cbind(data_all, data_interact)
   }
   outcome_colnum <- 1
-
+  
   ncoef <- ncol(data_all)
   W_unlabel <- data_all[-(1:nn), -outcome_colnum]
-
+  
   data_sup <- data_all[1:nn,]
-
+  
   yi_cen <- data_sup[, 1] - mean(data_sup[, 1]*Vi)/mean(Vi)
-
+  
   ri_hat <- yi_cen*data_sup[, covariate_name]
-  rhat_sup <- mean(ri_hat*Vi)/mean(Vi)
-
+  rhat_sup <- mean(Vi*ri_hat)/mean(Vi)
+  
   bethat <- lm(yi_cen~data_sup[, -outcome_colnum], weights = Vi)$coef[1:ncoef]
   if(length(which(is.na(bethat)))>0){
     bethat[which(is.na(bethat))] <- 0 #TODO
@@ -99,18 +104,18 @@ rhat <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
   ##rhat_ssl = mean(npreg(bws=bw,txdat=fi_hat,tydat=ri_hat, exdat = fj_hat)$mean,na.rm=T)
   rhat_ssl <- smooth_sslCPP(ri = ri_hat, fi = fi_hat, fnew = fj_hat, rsup = rhat_sup,
                             wgt = weights, bw = bw, cdf_trans = cdf_trans)
-
+  
   mij_hat <- rhat_ssl[4:length(rhat_ssl)]
   bw <- rhat_ssl[3]
   rhat_ssl_bc <- rhat_ssl[2]
   rhat_ssl <- rhat_ssl[1]
-
-  return(list("rhat" = c("Supervised"=rhat_sup,"NoSmooth"=mean(c(fi_hat,fj_hat)), "SemiSupervised"=rhat_ssl,
-                         "SemiSupervisedBC"=rhat_ssl_bc),
-              "var" = c("Supervised"=sum(Vi*(ri_hat-rhat_sup)^2)/(nn*sum(Vi)),
-                        "NoSmooth"=sum(Vi*(ri_hat-fi_hat)^2)/(nn*sum(Vi)),
-                        "SemiSupervised"=sum(Vi*(ri_hat-mij_hat[1:nn])^2)/(nn*sum(Vi)),
-                        "SemiSupervisedBC"=sum(Vi*(ri_hat-mij_hat[1:nn])^2)/(nn*sum(Vi))),
+  
+  return(list("rhat" = c("Supervised" = rhat_sup,"NoSmooth" = mean(c(fi_hat,fj_hat)), "SemiSupervised" = rhat_ssl,
+                         "SemiSupervisedBC" = rhat_ssl_bc),
+              "var" = c("Supervised" = mean(pi^2*(ri_hat-rhat_sup)^2/nn)/mean(pi^2), 
+                        "NoSmooth" = mean(pi^2*(ri_hat-fi_hat)^2/nn)/mean(pi^2), 
+                        "SemiSupervised" = mean(pi^2*(ri_hat-mij_hat[1:nn])^2/nn)/mean(pi^2),
+                        "SemiSupervisedBC" = mean(pi^2*(ri_hat-mij_hat[1:nn])^2/nn)/mean(pi^2)),
               "bw" = bw,
               "data_sup" = data_sup,
               "W_unlabel" = W_unlabel)

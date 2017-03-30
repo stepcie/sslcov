@@ -14,6 +14,13 @@ extremeSampling(data, nn, surrogate_name = NULL)
 \item{surrogate_name}{a character string vector containing the name of the
 columns from data containing the surrogate variables (at least 2)}
 }
+\value{
+a list :
+\code{extreme_index}
+\code{weights}: the sampling weights associated with each sampled observation (inverse of their 
+respective sampling probabilities). Can take only two values: 1 for extremes or wi0 for random
+observations (wi0 > 1).
+}
 \description{
 Extreme sampling function
 }

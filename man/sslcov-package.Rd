@@ -6,14 +6,16 @@
 \alias{sslcov}
 \title{sslcov}
 \description{
-This package implements semi-supervised estimation and testing of covariance
+Semi-Supervised Estimation Of Covariance
 }
 \details{
+This package implements semi-supervised estimation and testing of covariance and conditional covariance.
+
 \tabular{ll}{
 Package: \tab sslcov\cr
 Type: \tab Package\cr
-Version: \tab sslcov.0.1.1\cr
-Date: \tab 2017-03-27\cr
+Version: \tab sslcov.0.1.2\cr
+Date: \tab 2017-03-30\cr
 License: \tab \href{http://www.gnu.org/licenses/lgpl.txt}{MIT}\cr
 }
 The main function

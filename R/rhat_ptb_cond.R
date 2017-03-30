@@ -79,9 +79,10 @@ rhat_ptb_cond <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
   }
 
   if(is.null(weights)){
-    weights <- rep(1, NN)
+    weights <- rep(NN/nn, NN)
   }else{
-    weights <- c(weights, rep(1, NN-nn)) # random obs have weight of 1 of being sampled for supervised
+    wi0 <- max(weights) # sampling weight of a random obs 
+    weights <- c(weights, rep(wi0, NN-nn))
   }
   Vij_w <- Vij*weights
   Vi <- Vij_w[1:nn]
