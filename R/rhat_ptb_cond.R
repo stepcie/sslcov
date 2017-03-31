@@ -79,7 +79,8 @@ rhat_ptb_cond <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
   }
 
   if(is.null(weights)){
-    weights <- rep(NN/nn, NN)
+    wi0 <- NN/nn # sampling weight of a random obs 
+    Vij <- rep(wi0, NN)
   }else{
     wi0 <- max(weights) # sampling weight of a random obs 
     weights <- c(weights, rep(wi0, NN-nn))

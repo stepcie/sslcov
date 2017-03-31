@@ -61,17 +61,20 @@ rhat_cond <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
   stopifnot(length(weights)==nn)
 
   if(is.null(weights)){
-    Vij <- rep(NN/nn, NN)
+    wi0 <- NN/nn # sampling weight of a random obs 
+    weights <- rep(wi0, nn)
   }else{
-    wi0 <- max(weights) # sampling weight of a random obs 
-    Vij <- c(weights, rep(wi0, NN-nn))
+    wi0 <- max(weights) # sampling weight of a random obs (extremes sampling weights are 1)
   }
+  Vij <- c(weights, rep(wi0, NN-nn))
   Vi <- Vij[1:nn]
+  n0 <- sum(Vi!=1)
   
-  #sampling probabilities :
-  pij <- 1/Vij
-  pi <- 1/Vi
+  # variance weights from sampling probabilities :
+  pi <- rep(nn/n0, nn)
+  pi[Vi==1] <- 1/wi0
 
+  # data processing
   data_centered <- data[, covariate_name, drop=FALSE]# - mean(data[, covariate_name]*Vij, na.rm = TRUE)/mean(Vij) # center G with mean from the entire dataset
   data_all <- cbind(data[, outcome_colnum, drop=FALSE], data_centered, data[, surrogate_name, drop=FALSE])
   if(!is.null(adjust_covariates_name)){
@@ -143,12 +146,15 @@ rhat_cond <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
   bw <- rhat_ssl_smres[3]
   rhat_ssl_bc <- rhat_ssl_smres[2]
   rhat_ssl <- rhat_ssl_smres[1]
+  
+  
+  
   return(list("rhat" = c("Supervised"=rhat_sup,"NoSmooth"=mean(c(fi_hat,fj_hat)), "SemiSupervised"=rhat_ssl,
                          "SemiSupervisedBC"=rhat_ssl_bc),
-              "var" = c("Supervised"=mean(pi^2*(ri_hat-rhat_sup)^2/nn)/mean(pi^2),
-                        "NoSmooth"=mean(pi^2*(ri_hat-fi_hat)^2/nn)/mean(pi^2),
-                        "SemiSupervised"=mean(pi^2*(ri_hat-mij_hat[1:nn])^2/nn)/mean(pi^2),
-                        "SemiSupervisedBC"=mean(pi^2*(ri_hat-mij_hat[1:nn])^2/nn)/mean(pi^2)),
+              "var" = c("Supervised"=mean(pi^2*(ri_hat-rhat_sup)^2/nn),
+                        "NoSmooth"=mean(pi^2*(ri_hat-fi_hat)^2/nn),
+                        "SemiSupervised"=mean(pi^2*(ri_hat-mij_hat[1:nn])^2/nn),
+                        "SemiSupervisedBC"=mean(pi^2*(ri_hat-mij_hat[1:nn])^2/nn)),
               "bw" = bw,
               "data_sup" = data_sup,
               "W_unlabel" = W_unlabel,

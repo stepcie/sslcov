@@ -69,7 +69,7 @@ smooth_sslCPP <- function(ri, fi, fnew, wgt = NULL, bw = NULL, cdf_trans=TRUE, r
 
   rhat.ssl <- mean(rhat.num/rhat.den)
 
-  rhat.ssl.bc <- rhat.ssl - (mean(rhat.num[1:n_learn]/rhat.den[1:n_learn]*wgti)/mean(wgti)-rsup)
+  rhat.ssl.bc <- rhat.ssl - (sum(wgti*rhat.num[1:n_learn]/rhat.den[1:n_learn])/sum(wgti) - rsup)
 
   return(c(rhat.ssl, rhat.ssl.bc, bw, rhat.num/rhat.den))
 }
