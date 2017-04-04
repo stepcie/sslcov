@@ -60,7 +60,7 @@ rhat <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
   stopifnot(length(weights)==nn)
   
   if(is.null(weights)){
-    wi0 <- NN/nn # sampling weight of a random obs 
+    wi0 <- NN/nn #1 # sampling weight of a random obs 
     weights <- rep(wi0, nn)
   }else{
     wi0 <- max(weights) # sampling weight of a random obs (extremes sampling weights are 1)
@@ -72,6 +72,7 @@ rhat <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
   # variance weights from sampling probabilities :
   pi <- rep(nn/n0, nn)
   pi[Vi==1] <- nn/NN
+  #pi <- pi*NN/sum(Vi)
   
   # data processing
   data_centered <- data[, covariate_name, drop=FALSE] - mean(data[, covariate_name], na.rm = TRUE)#mean(data[, covariate_name]*Vij, na.rm = TRUE)/mean(Vij) # center G with mean from the entire dataset
@@ -113,9 +114,11 @@ rhat <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
   rhat_ssl_bc <- rhat_ssl[2]
   rhat_ssl <- rhat_ssl[1]
   
+  
+  
   return(list("rhat" = c("Supervised" = rhat_sup,"NoSmooth" = mean(c(fi_hat,fj_hat)), "SemiSupervised" = rhat_ssl,
                          "SemiSupervisedBC" = rhat_ssl_bc),
-              "var" = c("Supervised" = mean(pi^2*(ri_hat-rhat_sup)^2/nn), #sum(Vi^2*(ri_hat-rhat_sup)^2/sum(Vi)^2)
+              "var" = c("Supervised" = mean(pi^2*(ri_hat-rhat_sup)^2/nn), #sum(Vi^2*(ri_hat-rhat_sup)^2/sum(Vi)^2) #mean((pi*NN/sum(Vi))^2*(ri_hat-rhat_sup)^2/nn)
                         "NoSmooth" = mean(pi^2*(ri_hat-fi_hat)^2/nn), 
                         "SemiSupervised" = mean(pi^2*(ri_hat-mij_hat[1:nn])^2/nn),
                         "SemiSupervisedBC" = mean(pi^2*(ri_hat-mij_hat[1:nn])^2/nn)),

@@ -61,7 +61,7 @@ rhat_cond <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
   stopifnot(length(weights)==nn)
 
   if(is.null(weights)){
-    wi0 <- NN/nn # sampling weight of a random obs 
+    wi0 <- NN/nn #1 # sampling weight of a random obs 
     weights <- rep(wi0, nn)
   }else{
     wi0 <- max(weights) # sampling weight of a random obs (extremes sampling weights are 1)
@@ -72,7 +72,8 @@ rhat_cond <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
   
   # variance weights from sampling probabilities :
   pi <- rep(nn/n0, nn)
-  pi[Vi==1] <- 1/wi0
+  pi[Vi==1] <- nn/NN 
+  #pi <- pi*NN/sum(Vi)
 
   # data processing
   data_centered <- data[, covariate_name, drop=FALSE]# - mean(data[, covariate_name]*Vij, na.rm = TRUE)/mean(Vij) # center G with mean from the entire dataset
