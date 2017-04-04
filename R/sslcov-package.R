@@ -7,8 +7,8 @@
 #' \tabular{ll}{
 #' Package: \tab sslcov\cr
 #' Type: \tab Package\cr
-#' Version: \tab sslcov.0.1.3\cr
-#' Date: \tab 2017-03-31\cr
+#' Version: \tab sslcov.0.1.4\cr
+#' Date: \tab 2017-04-04\cr
 #' License: \tab \href{http://www.gnu.org/licenses/lgpl.txt}{MIT}\cr
 #' }
 #' The main function

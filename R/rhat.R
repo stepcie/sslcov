@@ -71,8 +71,9 @@ rhat <- function(data, nn, outcome_name=NULL, covariate_name=NULL,
   
   # variance weights from sampling probabilities :
   pi <- rep(nn/n0, nn)
-  pi[Vi==1] <- 1/wi0
+  pi[Vi==1] <- nn/NN
   
+  # data processing
   data_centered <- data[, covariate_name, drop=FALSE] - mean(data[, covariate_name], na.rm = TRUE)#mean(data[, covariate_name]*Vij, na.rm = TRUE)/mean(Vij) # center G with mean from the entire dataset
   data_all <- cbind(data[, outcome_colnum], data_centered, data[, surrogate_name])
   if(!is.null(adjust_covariates_name)){
