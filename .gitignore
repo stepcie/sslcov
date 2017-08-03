@@ -3,7 +3,9 @@
 .RData
 *.Rproj
 *.o
-*.so
 *.dll
+*.so
+src/sslcov.so
+src/*.so
 src-i386/*
 src-x64/*
