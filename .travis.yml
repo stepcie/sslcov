@@ -2,20 +2,21 @@ language: r
 cache: packages
 sudo: false
 
-r: 
-- release
-- devel
+matrix:
+  include:
+    - os: linux
+      r: release
+    
+    - os: linux
+      r: devel
 
-os:
-- linux
-- osx
+    - os: osx
+      r: devel
 
 r_packages:
 - Rcpp
 - RcppArmadillo
 - landpred
 - MASS
-
-r_build_args: "--html"
 
 r_check_args: "--as-cran --timings"
