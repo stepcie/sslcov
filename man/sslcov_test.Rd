@@ -112,3 +112,8 @@ res_ssl_noWeights_condi <- sslcov_test(y = data_sampled[,"Y"], x = data_sampled[
 }
 
 }
+\references{
+S Chan, BP Hejblum, A Chakrabortty, T Cai, Semi-Supervised 
+Estimation of Covariance with Application to Phenome-wide Association Studies 
+with Electronic Medical Records Data, 2017, \emph{submitted}.
+}

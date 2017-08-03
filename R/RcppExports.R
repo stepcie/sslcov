@@ -11,7 +11,7 @@
 #'@return matrix of densities of dimension \code{p x n}.
 #'@export
 dnormC_multi <- function(x, m, sd, Log = FALSE) {
-    .Call('sslcov_dnormC_multi', PACKAGE = 'sslcov', x, m, sd, Log)
+    .Call(`_sslcov_dnormC_multi`, x, m, sd, Log)
 }
 
 #'C++ implementation of empirical cdf
@@ -33,6 +33,6 @@ dnormC_multi <- function(x, m, sd, Log = FALSE) {
 #')}
 #'@export
 ecdf_cpp <- function(sobs, sref) {
-    .Call('sslcov_ecdf_cpp', PACKAGE = 'sslcov', sobs, sref)
+    .Call(`_sslcov_ecdf_cpp`, sobs, sref)
 }
 

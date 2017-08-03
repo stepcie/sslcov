@@ -20,6 +20,10 @@
 #'
 #'@importFrom stats na.omit sd quantile qnorm
 #'
+#'@references S Chan, BP Hejblum, A Chakrabortty, T Cai, Semi-Supervised 
+#'Estimation of Covariance with Application to Phenome-wide Association Studies 
+#'with Electronic Medical Records Data, 2017, \emph{submitted}.
+#'
 #'@examples
 #'\dontrun{
 #'#rm(list=ls())
