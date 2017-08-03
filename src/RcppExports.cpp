@@ -8,7 +8,7 @@ using namespace Rcpp;
 
 // dnormC_multi
 NumericMatrix dnormC_multi(NumericVector x, NumericVector m, double sd, bool Log);
-RcppExport SEXP sslcov_dnormC_multi(SEXP xSEXP, SEXP mSEXP, SEXP sdSEXP, SEXP LogSEXP) {
+RcppExport SEXP _sslcov_dnormC_multi(SEXP xSEXP, SEXP mSEXP, SEXP sdSEXP, SEXP LogSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -22,7 +22,7 @@ END_RCPP
 }
 // ecdf_cpp
 NumericVector ecdf_cpp(NumericVector sobs, NumericVector sref);
-RcppExport SEXP sslcov_ecdf_cpp(SEXP sobsSEXP, SEXP srefSEXP) {
+RcppExport SEXP _sslcov_ecdf_cpp(SEXP sobsSEXP, SEXP srefSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -31,4 +31,15 @@ BEGIN_RCPP
     rcpp_result_gen = Rcpp::wrap(ecdf_cpp(sobs, sref));
     return rcpp_result_gen;
 END_RCPP
+}
+
+static const R_CallMethodDef CallEntries[] = {
+    {"_sslcov_dnormC_multi", (DL_FUNC) &_sslcov_dnormC_multi, 4},
+    {"_sslcov_ecdf_cpp", (DL_FUNC) &_sslcov_ecdf_cpp, 2},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_sslcov(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
 }
